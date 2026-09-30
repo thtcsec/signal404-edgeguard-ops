@@ -1,0 +1,65 @@
+name: edgeguard-ops
+
+services:
+  mongodb:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: edgeguard
+    volumes:
+      - edgeguard_mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  telemetry-api:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: services/telemetry-api/Dockerfile
+    ports:
+      - "5080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      MongoDb__DatabaseName: edgeguard
+      Observability__ServiceName: edgeguard-telemetry-api
+      Observability__DatadogEnabled: "false"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  health-analyzer:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: services/health-analyzer/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      Observability__ServiceName: edgeguard-health-analyzer
+      Observability__DatadogEnabled: "false"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  response-worker:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: services/response-worker/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      Observability__ServiceName: edgeguard-response-worker
+      Observability__DatadogEnabled: "false"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  edgeguard_mongo:

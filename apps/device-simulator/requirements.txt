@@ -1,0 +1,2 @@
+# Scaffold tests only. Add runtime packages for the simulator during the build window.
+pytest>=8.3,<9

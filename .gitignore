@@ -1,0 +1,28 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+TestResults/
+artifacts/
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.pyc
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+secrets/
+*.key
+*.pem
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+*.DotSettings.user
