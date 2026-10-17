@@ -15,12 +15,13 @@ Submission deadline: **2026-10-31 23:59 ICT**.
 1. Create the `telemetry` time-series collection (`expireAfterSeconds`) and regular collections.
 2. Implement ingest on `POST /telemetry` and synthetic simulator (`NORMAL`, `THERMAL_THROTTLE`, …).
 3. Health analyzer: aggregation + `$setWindowFields`, open thermal incident.
+4. Response worker: poll incidents, switch to safe profile, observe recovery, resolve.
+5. Simulator honors commanded device profile (does not overwrite remediations).
 
 ### Next
 
-4. Response worker: switch to safe profile, verify recovery.
-5. Datadog: metrics/logs/traces, dashboard, thermal monitor.
-6. Demo video, slides, submission disclosure.
+6. Datadog: metrics/logs/traces, dashboard, thermal monitor.
+7. Demo video, slides, submission disclosure.
 
 ## Explicitly deferred
 

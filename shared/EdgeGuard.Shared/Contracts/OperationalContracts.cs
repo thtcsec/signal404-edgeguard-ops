@@ -7,11 +7,18 @@ public interface IDeviceRepository
     Task<DeviceRecord?> GetAsync(string deviceId, CancellationToken cancellationToken);
 
     Task UpsertAsync(DeviceRecord device, CancellationToken cancellationToken);
+
+    Task SetProfileAsync(string deviceId, DeviceProfile profile, CancellationToken cancellationToken);
 }
 
 public interface ITelemetryRepository
 {
     Task InsertAsync(TelemetryReading reading, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<TelemetryReading>> GetRecentAsync(
+        string deviceId,
+        TimeSpan lookback,
+        CancellationToken cancellationToken);
 }
 
 public interface IIncidentRepository
@@ -25,10 +32,27 @@ public interface IIncidentRepository
         IncidentType type,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<IncidentRecord>> ListByStatusesAsync(
+        IReadOnlyCollection<IncidentStatus> statuses,
+        CancellationToken cancellationToken);
+
+    Task<int> CountActiveAsync(CancellationToken cancellationToken);
+
+    Task UpdateAsync(IncidentRecord incident, CancellationToken cancellationToken);
+
     Task UpdateStatusAsync(
         string incidentId,
         IncidentStatus status,
         CancellationToken cancellationToken);
+}
+
+public interface IRemediationActionRepository
+{
+    Task InsertAsync(RemediationActionRecord action, CancellationToken cancellationToken);
+
+    Task<RemediationActionRecord?> GetAsync(string actionId, CancellationToken cancellationToken);
+
+    Task UpdateAsync(RemediationActionRecord action, CancellationToken cancellationToken);
 }
 
 public interface IFleetHealthAnalyzer
@@ -38,7 +62,5 @@ public interface IFleetHealthAnalyzer
 
 public interface IRemediationExecutor
 {
-    Task<RemediationActionRecord> ExecuteAsync(
-        IncidentRecord incident,
-        CancellationToken cancellationToken);
+    Task ProcessAsync(CancellationToken cancellationToken);
 }

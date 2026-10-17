@@ -17,13 +17,33 @@ using (var scope = app.Services.CreateScope())
     await mongo.EnsureInitializedAsync(CancellationToken.None);
 }
 
-app.Logger.LogInformation("Telemetry API ready. POST /telemetry writes to MongoDB time-series.");
+app.Logger.LogInformation(
+    "Telemetry API ready. Device profile is authoritative; ingest will not overwrite remediations.");
 
 app.MapGet("/health", async (EdgeGuardMongoContext mongo, CancellationToken cancellationToken) =>
 {
     var mongoOk = await mongo.CanPingAsync(cancellationToken);
     var status = mongoOk ? "healthy" : "degraded";
     return Results.Ok(new HealthResponse(status, "telemetry-api", false, mongoOk));
+});
+
+app.MapGet("/devices/{deviceId}", async (
+    string deviceId,
+    IDeviceRepository deviceRepository,
+    CancellationToken cancellationToken) =>
+{
+    var device = await deviceRepository.GetAsync(deviceId, cancellationToken);
+    if (device is null)
+    {
+        return Results.NotFound(new { error = $"Device '{deviceId}' was not found." });
+    }
+
+    return Results.Ok(new DeviceProfileResponse(
+        device.Id,
+        DomainMappings.FormatProfile(device.Profile),
+        DomainMappings.FormatStatus(device.Status),
+        device.Site,
+        device.Line));
 });
 
 app.MapPost("/telemetry", async (
@@ -42,13 +62,18 @@ app.MapPost("/telemetry", async (
     try
     {
         var reading = request.ToReading();
+        var existing = await deviceRepository.GetAsync(reading.Metadata.DeviceId, cancellationToken);
+
+        // Device profile is owned by remediation. Telemetry must not clobber a commanded safe/reduced profile.
+        var authoritativeProfile = existing?.Profile ?? reading.Profile;
+        reading = reading with { Profile = authoritativeProfile };
 
         using (TraceSources.ActivitySource.StartActivity(TraceSources.InsertTelemetry))
         {
             await telemetryRepository.InsertAsync(reading, cancellationToken);
         }
 
-        await UpsertDeviceFromTelemetryAsync(deviceRepository, reading, cancellationToken);
+        await UpsertDeviceFromTelemetryAsync(deviceRepository, existing, reading, cancellationToken);
         operationalTelemetry.RecordDeviceSample(reading);
 
         logger.LogInformation(
@@ -59,12 +84,12 @@ app.MapPost("/telemetry", async (
             reading.GpuTemperature,
             reading.Fps,
             reading.InferenceLatencyMs,
-            DomainMappings.FormatProfile(reading.Profile));
+            DomainMappings.FormatProfile(authoritativeProfile));
 
         return Results.Accepted(value: new TelemetryAcceptedResponse(
             reading.Metadata.DeviceId,
             reading.Timestamp,
-            DomainMappings.FormatProfile(reading.Profile),
+            DomainMappings.FormatProfile(authoritativeProfile),
             DomainMappings.FormatStatus(reading.Status)));
     }
     catch (ArgumentException ex)
@@ -85,10 +110,10 @@ app.Run();
 
 static async Task UpsertDeviceFromTelemetryAsync(
     IDeviceRepository deviceRepository,
+    DeviceRecord? existing,
     TelemetryReading reading,
     CancellationToken cancellationToken)
 {
-    var existing = await deviceRepository.GetAsync(reading.Metadata.DeviceId, cancellationToken);
     if (existing is null)
     {
         var created = new DeviceRecord(
@@ -105,18 +130,21 @@ static async Task UpsertDeviceFromTelemetryAsync(
         return;
     }
 
-    if (existing.Profile != reading.Profile || existing.Status != reading.Status)
+    if (existing.Status != reading.Status)
     {
-        var updated = existing with
-        {
-            Profile = reading.Profile,
-            Status = reading.Status
-        };
+        var updated = existing with { Status = reading.Status };
         await deviceRepository.UpsertAsync(updated, cancellationToken);
     }
 }
 
 internal sealed record HealthResponse(string Status, string Service, bool Scaffold, bool MongoOk);
+
+internal sealed record DeviceProfileResponse(
+    string DeviceId,
+    string Profile,
+    string Status,
+    string Site,
+    string Line);
 
 internal sealed record TelemetryAcceptedResponse(
     string DeviceId,

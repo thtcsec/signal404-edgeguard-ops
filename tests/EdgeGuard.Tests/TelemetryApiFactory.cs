@@ -23,6 +23,7 @@ public sealed class TelemetryApiFactory : WebApplicationFactory<Program>
             services.RemoveAll<IDeviceRepository>();
             services.RemoveAll<ITelemetryRepository>();
             services.RemoveAll<IIncidentRepository>();
+            services.RemoveAll<IRemediationActionRepository>();
 
             services.PostConfigure<MongoDbSettings>(settings =>
             {
@@ -31,10 +32,7 @@ public sealed class TelemetryApiFactory : WebApplicationFactory<Program>
                 settings.DatabaseName = _databaseName;
             });
 
-            services.AddSingleton<EdgeGuardMongoContext>();
-            services.AddSingleton<IDeviceRepository, MongoDeviceRepository>();
-            services.AddSingleton<ITelemetryRepository, MongoTelemetryRepository>();
-            services.AddSingleton<IIncidentRepository, MongoIncidentRepository>();
+            services.AddEdgeGuardMongo();
         });
     }
 

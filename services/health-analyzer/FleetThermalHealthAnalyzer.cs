@@ -68,21 +68,24 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
 
             opened++;
             _logger.LogWarning(
-                "Opened thermal incident {IncidentId} for {DeviceId}: gpu1m={Gpu1m:F1}C gpu5m={Gpu5m:F1}C latency1m={Latency1m:F1}ms fps1m={Fps1m:F1} packetLoss1m={PacketLoss:F2}%",
+                "Opened thermal incident {IncidentId} for {DeviceId}: gpu1m={Gpu1m:F1}C gpu5m={Gpu5m:F1}C latency1m={Latency1m:F1}ms fps1m={Fps1m:F1} packetLoss1m={PacketLoss:F2}% netLatency1m={NetLatency:F1}ms",
                 incident.Id,
                 snapshot.DeviceId,
                 snapshot.GpuTemp1m,
                 snapshot.GpuTemp5m,
                 snapshot.Latency1m,
                 snapshot.Fps1m,
-                snapshot.PacketLoss1m);
+                snapshot.PacketLoss1m,
+                snapshot.NetworkLatency1m);
         }
 
-        _telemetry.RecordActiveIncidents(opened);
+        var activeCount = await _incidents.CountActiveAsync(cancellationToken);
+        _telemetry.RecordActiveIncidents(activeCount);
         _logger.LogInformation(
-            "Health analysis complete. Devices evaluated={DeviceCount}, incidents opened={Opened}",
+            "Health analysis complete. Devices evaluated={DeviceCount}, incidents opened={Opened}, activeIncidents={Active}",
             snapshots.Count,
-            opened);
+            opened,
+            activeCount);
     }
 
     private async Task<IReadOnlyList<DeviceTrendSnapshot>> EvaluateDeviceTrendsAsync(
@@ -108,6 +111,7 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
                         { "latency5m", WindowAvg("$inferenceLatencyMs", -5) },
                         { "fps1m", WindowAvg("$fps", -1) },
                         { "packetLoss1m", WindowAvg("$packetLossPct", -1) },
+                        { "networkLatency1m", WindowAvg("$networkLatencyMs", -1) },
                         { "dropped1m", WindowAvg("$droppedFrames", -1) }
                     }
                 }
@@ -125,6 +129,7 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
                 { "latency5m", new BsonDocument("$first", "$latency5m") },
                 { "fps1m", new BsonDocument("$first", "$fps1m") },
                 { "packetLoss1m", new BsonDocument("$first", "$packetLoss1m") },
+                { "networkLatency1m", new BsonDocument("$first", "$networkLatency1m") },
                 { "dropped1m", new BsonDocument("$first", "$dropped1m") },
                 { "profile", new BsonDocument("$first", "$profile") },
                 { "status", new BsonDocument("$first", "$status") }
@@ -140,7 +145,8 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
 
     private bool IsThermalIncident(DeviceTrendSnapshot snapshot)
     {
-        if (snapshot.PacketLoss1m >= _settings.PacketLossMaxPct)
+        // Network evidence must stay calm; otherwise prefer a network incident path later.
+        if (snapshot.PacketLoss1m >= _settings.PacketLossMaxPct || snapshot.NetworkLatency1m >= 80.0)
         {
             return false;
         }
@@ -172,10 +178,13 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
 
     private static IncidentRecord CreateIncident(DeviceTrendSnapshot snapshot)
     {
+        // Note: the 5-minute rolling window includes the latest minute (trailing window),
+        // so the delta is "recent average vs longer trailing average", not a disjoint prior window.
         var rootCause =
-            $"Thermal throttling suspected: GPU 1m avg {snapshot.GpuTemp1m:F1}C vs 5m {snapshot.GpuTemp5m:F1}C; " +
-            $"latency 1m {snapshot.Latency1m:F1}ms vs 5m {snapshot.Latency5m:F1}ms; " +
-            $"packet loss {snapshot.PacketLoss1m:F2}% (network ruled out).";
+            $"Thermal throttling suspected: GPU 1m avg {snapshot.GpuTemp1m:F1}C vs trailing 5m {snapshot.GpuTemp5m:F1}C; " +
+            $"latency 1m {snapshot.Latency1m:F1}ms vs trailing 5m {snapshot.Latency5m:F1}ms; " +
+            $"packet loss {snapshot.PacketLoss1m:F2}%, network latency {snapshot.NetworkLatency1m:F1}ms " +
+            "(network path looks calm relative to thermal/inference degradation).";
 
         return new IncidentRecord(
             Id: $"inc-thermal-{snapshot.DeviceId}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
@@ -205,6 +214,7 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
         double Latency5m,
         double Fps1m,
         double PacketLoss1m,
+        double NetworkLatency1m,
         double Dropped1m,
         string Profile,
         string Status)
@@ -221,6 +231,7 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
                 document.GetValue("latency5m", 0).ToDouble(),
                 document.GetValue("fps1m", 0).ToDouble(),
                 document.GetValue("packetLoss1m", 0).ToDouble(),
+                document.GetValue("networkLatency1m", 0).ToDouble(),
                 document.GetValue("dropped1m", 0).ToDouble(),
                 document.GetValue("profile", "full").AsString,
                 document.GetValue("status", "healthy").AsString);

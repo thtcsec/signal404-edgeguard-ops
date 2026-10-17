@@ -167,7 +167,9 @@ The same window shape applies to FPS and dropped frames. Health rollups per devi
 ### What "degradation" means in the demo
 
 ```text
-current 1-minute average vs previous 5-minute rolling average
+current 1-minute trailing average
+vs.
+trailing 5-minute rolling average (includes the latest minute)
 ```
 
-Temperature and inference latency moving up together, while packet loss stays low, distinguishes thermal throttling from network degradation. When the signal fires and no active incident exists for the device, an `OPEN` incident is inserted into `incidents`.
+The 5-minute window is a trailing window, not a disjoint "previous 5 minutes before now-1m". Temperature and inference latency moving up together, while packet loss and network latency stay calm, supports a thermal (not network) hypothesis. When the signal fires and no active incident exists for the device, an `OPEN` incident is inserted into `incidents`.

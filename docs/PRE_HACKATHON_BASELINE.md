@@ -60,3 +60,5 @@ Implemented after the official window opened (not part of the pre-hackathon base
 - Real `POST /telemetry` ingest and device upsert
 - Python simulator scenarios that emit synthetic telemetry
 - Health analyzer with `$setWindowFields` trend comparison and thermal incident creation
+- Response worker safe-profile remediation with observation window before RESOLVED
+- Simulator profile sync so remediation is not overwritten by telemetry

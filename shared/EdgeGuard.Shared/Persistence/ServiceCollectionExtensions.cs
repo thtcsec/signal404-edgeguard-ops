@@ -11,6 +11,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddSingleton<IDeviceRepository, MongoDeviceRepository>();
         services.AddSingleton<ITelemetryRepository, MongoTelemetryRepository>();
         services.AddSingleton<IIncidentRepository, MongoIncidentRepository>();
+        services.AddSingleton<IRemediationActionRepository, MongoRemediationActionRepository>();
         return services;
     }
 }

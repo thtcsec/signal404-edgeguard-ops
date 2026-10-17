@@ -181,4 +181,52 @@ public static class DomainMappings
             "memory_pressure" => IncidentType.MemoryPressure,
             _ => Enum.Parse<IncidentType>(value, ignoreCase: true)
         };
+
+    public static RemediationActionDocument ToDocument(this RemediationActionRecord action) =>
+        new()
+        {
+            Id = action.Id,
+            IncidentId = action.IncidentId,
+            DeviceId = action.DeviceId,
+            ActionType = FormatRemediationAction(action.ActionType),
+            State = FormatRemediationState(action.State),
+            RequestedAt = action.RequestedAt.UtcDateTime,
+            CompletedAt = action.CompletedAt?.UtcDateTime
+        };
+
+    public static RemediationActionRecord ToDomain(this RemediationActionDocument document) =>
+        new(
+            document.Id,
+            document.IncidentId,
+            document.DeviceId,
+            ParseRemediationAction(document.ActionType),
+            ParseRemediationState(document.State),
+            new DateTimeOffset(DateTime.SpecifyKind(document.RequestedAt, DateTimeKind.Utc)),
+            document.CompletedAt is null
+                ? null
+                : new DateTimeOffset(DateTime.SpecifyKind(document.CompletedAt.Value, DateTimeKind.Utc)));
+
+    public static string FormatRemediationAction(RemediationActionType type) =>
+        type switch
+        {
+            RemediationActionType.SwitchToSafeProfile => "SWITCH_TO_SAFE_PROFILE",
+            RemediationActionType.ReduceInferenceRate => "REDUCE_INFERENCE_RATE",
+            RemediationActionType.RestartInferenceService => "RESTART_INFERENCE_SERVICE",
+            _ => type.ToString().ToUpperInvariant()
+        };
+
+    public static RemediationActionType ParseRemediationAction(string value) =>
+        value.ToUpperInvariant() switch
+        {
+            "SWITCH_TO_SAFE_PROFILE" => RemediationActionType.SwitchToSafeProfile,
+            "REDUCE_INFERENCE_RATE" => RemediationActionType.ReduceInferenceRate,
+            "RESTART_INFERENCE_SERVICE" => RemediationActionType.RestartInferenceService,
+            _ => Enum.Parse<RemediationActionType>(value, ignoreCase: true)
+        };
+
+    public static string FormatRemediationState(RemediationState state) =>
+        state.ToString().ToUpperInvariant();
+
+    public static RemediationState ParseRemediationState(string value) =>
+        Enum.Parse<RemediationState>(value, ignoreCase: true);
 }

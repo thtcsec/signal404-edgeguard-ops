@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using EdgeGuard.Shared.Contracts;
+using EdgeGuard.Shared.Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EdgeGuard.Tests;
 
@@ -56,6 +59,65 @@ public sealed class TelemetryApiScaffoldTests : IClassFixture<TelemetryApiFactor
         Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
         var body = await response.Content.ReadAsStringAsync();
         Assert.Contains("edge-test-001", body, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Telemetry_DoesNotOverwriteCommandedSafeProfile()
+    {
+        var client = _factory.CreateClient();
+        var deviceId = $"edge-safe-{Guid.NewGuid():N}"[..20];
+
+        var create = await client.PostAsJsonAsync("/telemetry", new
+        {
+            deviceId,
+            site = "factory-a",
+            line = "line-03",
+            timestamp = DateTimeOffset.UtcNow,
+            cpuUsage = 40.0,
+            memoryUsage = 50.0,
+            cpuTemperature = 60.0,
+            gpuTemperature = 65.0,
+            gpuUsage = 70.0,
+            fps = 28.0,
+            inferenceLatencyMs = 40.0,
+            packetLossPct = 0.1,
+            networkLatencyMs = 10.0,
+            droppedFrames = 0,
+            profile = "full",
+            status = "healthy"
+        });
+        Assert.Equal(HttpStatusCode.Accepted, create.StatusCode);
+
+        var devices = _factory.Services.GetRequiredService<IDeviceRepository>();
+        await devices.SetProfileAsync(deviceId, DeviceProfile.Safe, CancellationToken.None);
+
+        var overwriteAttempt = await client.PostAsJsonAsync("/telemetry", new
+        {
+            deviceId,
+            site = "factory-a",
+            line = "line-03",
+            timestamp = DateTimeOffset.UtcNow,
+            cpuUsage = 40.0,
+            memoryUsage = 50.0,
+            cpuTemperature = 55.0,
+            gpuTemperature = 60.0,
+            gpuUsage = 40.0,
+            fps = 24.0,
+            inferenceLatencyMs = 35.0,
+            packetLossPct = 0.1,
+            networkLatencyMs = 10.0,
+            droppedFrames = 0,
+            profile = "full",
+            status = "healthy"
+        });
+
+        Assert.Equal(HttpStatusCode.Accepted, overwriteAttempt.StatusCode);
+        var body = await overwriteAttempt.Content.ReadAsStringAsync();
+        Assert.Contains("\"profile\":\"safe\"", body, StringComparison.OrdinalIgnoreCase);
+
+        var device = await devices.GetAsync(deviceId, CancellationToken.None);
+        Assert.NotNull(device);
+        Assert.Equal(DeviceProfile.Safe, device.Profile);
     }
 
     [Fact]
