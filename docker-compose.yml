@@ -16,6 +16,32 @@ services:
       retries: 10
       start_period: 15s
 
+  datadog-agent:
+    profiles: ["datadog"]
+    image: gcr.io/datadoghq/agent:7
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DD_API_KEY: ${DD_API_KEY:-}
+      DD_SITE: ${DD_SITE:-datadoghq.com}
+      DD_HOSTNAME: edgeguard-local
+      DD_ENV: ${DD_ENV:-development}
+      DD_APM_ENABLED: "true"
+      DD_APM_NON_LOCAL_TRAFFIC: "true"
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
+      DD_LOGS_ENABLED: "true"
+      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: "false"
+      DD_PROCESS_AGENT_ENABLED: "false"
+      DD_REMOTE_CONFIGURATION_ENABLED: "false"
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+    volumes:
+      - ./infrastructure/datadog/datadog.yaml:/etc/datadog-agent/datadog.yaml:ro
+      - ./infrastructure/datadog/conf.d:/etc/datadog-agent/conf.d:ro
+    restart: unless-stopped
+
   telemetry-api:
     profiles: ["apps"]
     build:
@@ -28,7 +54,16 @@ services:
       MongoDb__ConnectionString: mongodb://mongodb:27017
       MongoDb__DatabaseName: edgeguard
       Observability__ServiceName: edgeguard-telemetry-api
-      Observability__DatadogEnabled: "false"
+      Observability__DatadogEnabled: ${Observability__DatadogEnabled:-false}
+      Observability__AgentHost: datadog-agent
+      DD_SERVICE: edgeguard-telemetry-api
+      DD_ENV: ${DD_ENV:-development}
+      DD_AGENT_HOST: datadog-agent
+      DD_TRACE_AGENT_PORT: "8126"
+      DD_DOGSTATSD_PORT: "8125"
+      DD_LOGS_INJECTION: "true"
+      DD_TRACE_OTEL_ENABLED: "true"
+      DD_TRACE_ENABLED: ${DD_TRACE_ENABLED:-false}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -42,7 +77,16 @@ services:
       DOTNET_ENVIRONMENT: Development
       MongoDb__ConnectionString: mongodb://mongodb:27017
       Observability__ServiceName: edgeguard-health-analyzer
-      Observability__DatadogEnabled: "false"
+      Observability__DatadogEnabled: ${Observability__DatadogEnabled:-false}
+      Observability__AgentHost: datadog-agent
+      DD_SERVICE: edgeguard-health-analyzer
+      DD_ENV: ${DD_ENV:-development}
+      DD_AGENT_HOST: datadog-agent
+      DD_TRACE_AGENT_PORT: "8126"
+      DD_DOGSTATSD_PORT: "8125"
+      DD_LOGS_INJECTION: "true"
+      DD_TRACE_OTEL_ENABLED: "true"
+      DD_TRACE_ENABLED: ${DD_TRACE_ENABLED:-false}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -56,7 +100,16 @@ services:
       DOTNET_ENVIRONMENT: Development
       MongoDb__ConnectionString: mongodb://mongodb:27017
       Observability__ServiceName: edgeguard-response-worker
-      Observability__DatadogEnabled: "false"
+      Observability__DatadogEnabled: ${Observability__DatadogEnabled:-false}
+      Observability__AgentHost: datadog-agent
+      DD_SERVICE: edgeguard-response-worker
+      DD_ENV: ${DD_ENV:-development}
+      DD_AGENT_HOST: datadog-agent
+      DD_TRACE_AGENT_PORT: "8126"
+      DD_DOGSTATSD_PORT: "8125"
+      DD_LOGS_INJECTION: "true"
+      DD_TRACE_OTEL_ENABLED: "true"
+      DD_TRACE_ENABLED: ${DD_TRACE_ENABLED:-false}
     depends_on:
       mongodb:
         condition: service_healthy

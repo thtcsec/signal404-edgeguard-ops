@@ -1,0 +1,125 @@
+{
+  "title": "EdgeGuard Fleet Operations",
+  "description": "Detect → Investigate → Respond → Verify for thermal throttling on edge camera fleets. Reproducible from repo via scripts/datadog-apply.ps1.",
+  "widgets": [
+    {
+      "definition": {
+        "title": "GPU temperature (by device)",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "line",
+            "q": "avg:edgeguard.device.gpu_temperature{*} by {device_id}"
+          }
+        ],
+        "yaxis": { "include_zero": false },
+        "markers": [
+          {
+            "value": "y = 85",
+            "display_type": "error dashed",
+            "label": "thermal threshold 85C"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Inference latency (ms)",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "line",
+            "q": "avg:edgeguard.device.inference_latency{*} by {device_id}"
+          }
+        ],
+        "markers": [
+          {
+            "value": "y = 100",
+            "display_type": "warning dashed",
+            "label": "latency threshold"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "FPS",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "line",
+            "q": "avg:edgeguard.device.fps{*} by {device_id}"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Packet loss % (network contrast)",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "line",
+            "q": "avg:edgeguard.device.packet_loss{*} by {device_id}"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Active incidents",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "bars",
+            "q": "avg:edgeguard.incident.active{*}"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Remediation actions",
+        "type": "timeseries",
+        "requests": [
+          {
+            "display_type": "bars",
+            "q": "sum:edgeguard.remediation.count{*}.as_count()"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Incident / remediation logs",
+        "type": "list_stream",
+        "requests": [
+          {
+            "columns": [
+              { "field": "timestamp", "width": "auto" },
+              { "field": "service", "width": "compact" },
+              { "field": "content", "width": "full" }
+            ],
+            "query": {
+              "data_source": "logs_stream",
+              "query_string": "service:(edgeguard-telemetry-api OR edgeguard-health-analyzer OR edgeguard-response-worker) (incident_id OR device_id OR action_id OR thermal OR Remediation OR RESOLVED)",
+              "indexes": ["*"]
+            },
+            "response_format": "event_list"
+          }
+        ]
+      }
+    }
+  ],
+  "layout_type": "ordered",
+  "notify_list": [],
+  "template_variables": [
+    {
+      "name": "device_id",
+      "prefix": "device_id",
+      "available_values": [],
+      "default": "*"
+    }
+  ],
+  "reflow_type": "auto"
+}

@@ -1,70 +1,73 @@
 # Observability
 
-Plan for Datadog. Nothing in this file is deployed. `Observability:DatadogEnabled` is false in every service, and the Compose file does not start a Datadog agent.
+## Implementation vs live verification
+
+- **Implemented in this repo:** DogStatsD `IOperationalTelemetry`, optional Datadog Agent Compose profile, structured JSON logs with `device_id` / `incident_id` / `action_id`, `ActivitySource` spans, reproducible dashboard/monitor JSON, and `scripts/datadog-apply.ps1`.
+- **Verified locally:** full Detect → Investigate → Respond → Verify path with `Observability:DatadogEnabled=false` (including mid-recovery telemetry stall).
+- **Not yet verified live:** metrics appearing in a Datadog org, dashboard/monitor apply, monitor ALERT → OK in the UI, and APM span capture. Those require `DD_API_KEY` / `DD_APP_KEY` and a separate validation pass — do not claim them until completed.
+
+## Runtime modes
+
+| Mode | Behavior |
+| --- | --- |
+| `Observability:DatadogEnabled=false` (default) | `NoOpOperationalTelemetry`, stack runs without agent |
+| `Observability:DatadogEnabled=true` | DogStatsD metrics to agent; JSON console logs; ActivitySource spans when `DD_TRACE_ENABLED=true` |
+
+Cross-process polling (API / analyzer / response-worker) is correlated by `device_id`, `incident_id`, and `action_id` in logs and span tags. This repository does **not** claim a single distributed trace across those processes unless W3C/Datadog trace-context propagation is added later.
 
 ## Metrics
 
-| Name | Kind (planned) |
-| --- | --- |
-| `edgeguard.device.cpu_usage` | gauge |
-| `edgeguard.device.memory_usage` | gauge |
-| `edgeguard.device.cpu_temperature` | gauge |
-| `edgeguard.device.gpu_temperature` | gauge |
-| `edgeguard.device.gpu_usage` | gauge |
-| `edgeguard.device.fps` | gauge |
-| `edgeguard.device.inference_latency` | gauge |
-| `edgeguard.device.packet_loss` | gauge |
-| `edgeguard.device.network_latency` | gauge |
-| `edgeguard.device.dropped_frames` | gauge or count |
-| `edgeguard.incident.active` | gauge |
-| `edgeguard.remediation.count` | count |
+Emitted by `DogStatsDOperationalTelemetry` on ingest / analysis / remediation:
 
-Constants live in `EdgeGuard.Shared.Observability.MetricNames`. The sink is `NoOpOperationalTelemetry`, which discards samples.
+- `edgeguard.device.gpu_temperature`
+- `edgeguard.device.inference_latency`
+- `edgeguard.device.fps`
+- `edgeguard.device.packet_loss`
+- `edgeguard.device.*` (cpu/memory/network/dropped frames)
+- `edgeguard.incident.active` (gauge of currently active incidents)
+- `edgeguard.remediation.count` (increment)
 
-## Tags
+Tags: `device_id`, `site`, `line`, `profile` (reported), `device_type`, `action_type`.
 
-`device_id`, `site`, `line`, `device_type`, `profile`, `incident_type`, `severity`.
+## Traces
 
-## Dashboard sections
+`ActivitySource` name: `EdgeGuard.Ops`
 
-Plans only, in `observability/datadog/`:
+Span names:
 
-1. Fleet Overview
-2. Device Health
-3. AI Inference Performance
-4. Network Health
-5. Active Incidents
-6. Incident Investigation
-7. Remediation / Recovery
+- `POST /telemetry`
+- `TelemetryRepository.insert`
+- `HealthAnalyzer.analyze`
+- `IncidentRepository.insert`
+- `RemediationExecutor.execute`
+- `Remediation.incident`
 
-## Monitors to add during the build window
+Enable agent capture of custom activities with `DD_TRACE_OTEL_ENABLED=true` and `DD_TRACE_ENABLED=true`.
 
-- GPU temperature too high
-- Inference latency degradation
-- FPS below threshold
-- Packet loss above threshold
+## Logs
 
-The thermal demo needs at least one of the first three as the primary alert. Packet loss is the contrast monitor that should stay quiet during that incident.
+Services use JSON console logging. Search keys in message templates:
 
-## Logs and traces
+- `device_id=`
+- `incident_id=`
+- `action_id=`
+- `commanded_profile=` / `reported_profile=`
 
-Services already use the standard .NET logger. During the build window, logs should include `device_id`, `incident_id`, and `trace_id` so Datadog Log Management can pivot from the monitor to one device.
+## Dashboard + monitor (repo as source of truth)
 
-`ActivitySource` name: `EdgeGuard.Ops`.
+Definitions live in the repository (reproducible; not UI-only). They are **not applied** until you run the apply script against a Datadog org:
 
-Reserved activity names:
+- [dashboard-fleet-operations.json](../observability/datadog/dashboard-fleet-operations.json)
+- [monitor-thermal-gpu.json](../observability/datadog/monitor-thermal-gpu.json)
 
-```text
-POST /telemetry
-    -> TelemetryRepository.insert
-
-HealthAnalyzer.analyze
-    -> IncidentRepository.insert
-    -> RemediationExecutor.execute
+```powershell
+$env:DD_API_KEY = "..."   # from local .env — never commit
+$env:DD_APP_KEY = "..."
+.\scripts\datadog-apply.ps1
 ```
 
-No automatic instrumentation package is referenced yet. Expected packages when the trial account is available: Datadog tracing distribution for .NET, and DogStatsD for the custom metrics. Agent configuration belongs in `infrastructure/datadog/`.
+Thermal monitor **expected** lifecycle after live apply: **ALERT** when GPU avg exceeds 85°C, **OK** after safe-profile recovery brings temperature under the recovery threshold (75°C). Confirm this in the Datadog UI during live validation.
 
-## Anomaly detection
+## Demo with Datadog
 
-Optional. A fixed threshold on GPU temperature plus the MongoDB window comparison is enough for the story. Datadog anomaly detection is a later addition if the trial account and the demo timing allow it.
+See [DEMO.md](DEMO.md) sections A (verified) and B (pending live credentials).

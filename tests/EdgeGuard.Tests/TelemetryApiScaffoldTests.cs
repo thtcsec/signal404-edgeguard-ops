@@ -59,10 +59,12 @@ public sealed class TelemetryApiScaffoldTests : IClassFixture<TelemetryApiFactor
         Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
         var body = await response.Content.ReadAsStringAsync();
         Assert.Contains("edge-test-001", body, StringComparison.Ordinal);
+        Assert.Contains("reportedProfile", body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("commandedProfile", body, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task Telemetry_DoesNotOverwriteCommandedSafeProfile()
+    public async Task Telemetry_DoesNotOverwriteCommandedSafeProfile_AndKeepsReportedFull()
     {
         var client = _factory.CreateClient();
         var deviceId = $"edge-safe-{Guid.NewGuid():N}"[..20];
@@ -89,7 +91,7 @@ public sealed class TelemetryApiScaffoldTests : IClassFixture<TelemetryApiFactor
         Assert.Equal(HttpStatusCode.Accepted, create.StatusCode);
 
         var devices = _factory.Services.GetRequiredService<IDeviceRepository>();
-        await devices.SetProfileAsync(deviceId, DeviceProfile.Safe, CancellationToken.None);
+        await devices.SetCommandedProfileAsync(deviceId, DeviceProfile.Safe, CancellationToken.None);
 
         var overwriteAttempt = await client.PostAsJsonAsync("/telemetry", new
         {
@@ -113,11 +115,16 @@ public sealed class TelemetryApiScaffoldTests : IClassFixture<TelemetryApiFactor
 
         Assert.Equal(HttpStatusCode.Accepted, overwriteAttempt.StatusCode);
         var body = await overwriteAttempt.Content.ReadAsStringAsync();
-        Assert.Contains("\"profile\":\"safe\"", body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\"commandedProfile\":\"safe\"", body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\"reportedProfile\":\"full\"", body, StringComparison.OrdinalIgnoreCase);
 
         var device = await devices.GetAsync(deviceId, CancellationToken.None);
         Assert.NotNull(device);
         Assert.Equal(DeviceProfile.Safe, device.Profile);
+
+        var telemetry = _factory.Services.GetRequiredService<ITelemetryRepository>();
+        var recent = await telemetry.GetRecentAsync(deviceId, TimeSpan.FromMinutes(5), CancellationToken.None);
+        Assert.Contains(recent, x => x.Profile == DeviceProfile.Full);
     }
 
     [Fact]

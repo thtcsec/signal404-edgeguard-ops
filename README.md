@@ -2,7 +2,7 @@
 
 **Signal404** · real-time observability and automated incident response for IoT and edge AI device fleets.
 
-> Current status: Official build window in progress (17/10 → 31/10). Detect → remediate → observe recovery is implemented with synthetic telemetry. Datadog wiring is next.
+> Current status: Official build window in progress (17/10 → 31/10). Detect → remediate → verify recovery works with Datadog optional (disabled by default).
 
 ## Problem
 
@@ -83,7 +83,7 @@ None of those steps run today.
 | `services/response-worker` | Poll incidents → safe profile → verify → RESOLVED |
 | `shared/EdgeGuard.Shared` | Settings, domain, Mongo repositories |
 | `apps/device-simulator` | Synthetic fleet; `NORMAL` / `THERMAL_THROTTLE` / more |
-| `observability/datadog` | Plans; live Datadog wiring next |
+| `observability/datadog` | Dashboard + monitor JSON + apply script |
 | `docs` | Design and pre-hackathon disclosure |
 
 ## Develop

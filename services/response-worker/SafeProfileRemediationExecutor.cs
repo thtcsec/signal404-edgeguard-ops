@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using EdgeGuard.Shared.Configuration;
 using EdgeGuard.Shared.Contracts;
 using EdgeGuard.Shared.Domain;
@@ -10,7 +11,7 @@ namespace EdgeGuard.ResponseWorker;
 /// <summary>
 /// Polls MongoDB for open/mitigating/recovering incidents.
 /// Standalone Compose MongoDB has no replica set, so change streams are not used.
-/// Switches devices to the safe profile, observes recovery telemetry, then resolves.
+/// Correlates work with device_id / incident_id / action_id tags (no cross-process trace propagation claimed).
 /// </summary>
 public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
 {
@@ -56,6 +57,11 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
 
         foreach (var incident in active)
         {
+            using var incidentActivity = TraceSources.ActivitySource.StartActivity("Remediation.incident");
+            incidentActivity?.SetTag("device.id", incident.DeviceId);
+            incidentActivity?.SetTag("incident.id", incident.Id);
+            incidentActivity?.SetTag("incident.status", incident.Status.ToString());
+
             switch (incident.Status)
             {
                 case IncidentStatus.Open:
@@ -86,7 +92,7 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
         if (device is null)
         {
             _logger.LogWarning(
-                "Skipping remediation for {IncidentId}: device {DeviceId} not found yet.",
+                "Skipping remediation incident_id={IncidentId} device_id={DeviceId}: device not found yet.",
                 incident.Id,
                 incident.DeviceId);
             return;
@@ -101,8 +107,10 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
             RequestedAt: DateTimeOffset.UtcNow,
             CompletedAt: null);
 
+        Activity.Current?.SetTag("action.id", action.Id);
+
         await _actions.InsertAsync(action, cancellationToken);
-        await _devices.SetProfileAsync(incident.DeviceId, DeviceProfile.Safe, cancellationToken);
+        await _devices.SetCommandedProfileAsync(incident.DeviceId, DeviceProfile.Safe, cancellationToken);
 
         var applied = action with { State = RemediationState.Applied };
         await _actions.UpdateAsync(applied, cancellationToken);
@@ -116,7 +124,7 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
         _metrics.RecordRemediation(RemediationActionType.SwitchToSafeProfile);
 
         _logger.LogWarning(
-            "Remediation applied for {IncidentId}: device {DeviceId} profile -> safe (action {ActionId})",
+            "Remediation applied incident_id={IncidentId} device_id={DeviceId} action_id={ActionId} commanded_profile=safe",
             incident.Id,
             incident.DeviceId,
             action.Id);
@@ -135,8 +143,13 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
             TimeSpan.FromSeconds(_settings.RecentTelemetrySeconds),
             cancellationToken);
 
+        // Evidence must be reported/applied safe in telemetry — commanded alone is not enough.
         if (recent.Count == 0 || recent.All(x => x.Profile != DeviceProfile.Safe))
         {
+            _logger.LogDebug(
+                "Waiting for reported_profile=safe telemetry incident_id={IncidentId} device_id={DeviceId}",
+                incident.Id,
+                incident.DeviceId);
             return;
         }
 
@@ -145,15 +158,17 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
         _recoveringSince[incident.Id] = DateTimeOffset.UtcNow;
 
         _logger.LogInformation(
-            "Incident {IncidentId} entered RECOVERING; observing at least {Seconds}s before resolve.",
+            "Incident entered RECOVERING incident_id={IncidentId} device_id={DeviceId} observation_seconds={Seconds}",
             incident.Id,
+            incident.DeviceId,
             _settings.ObservationSeconds);
     }
 
     private async Task TryResolveAsync(IncidentRecord incident, CancellationToken cancellationToken)
     {
         var since = _recoveringSince.GetOrAdd(incident.Id, DateTimeOffset.UtcNow);
-        if (DateTimeOffset.UtcNow - since < TimeSpan.FromSeconds(_settings.ObservationSeconds))
+        var device = await _devices.GetAsync(incident.DeviceId, cancellationToken);
+        if (device is null)
         {
             return;
         }
@@ -163,12 +178,37 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
             TimeSpan.FromSeconds(_settings.RecentTelemetrySeconds),
             cancellationToken);
 
-        if (!IsRecovered(recent))
+        var evaluation = RecoveryEvidence.Evaluate(
+            recent,
+            device.Profile,
+            since,
+            DateTimeOffset.UtcNow,
+            _settings.ObservationSeconds,
+            _settings.MaxTelemetryStalenessSeconds,
+            _settings.MaxSampleGapSeconds,
+            _settings.MinHealthySamples,
+            _settings.RecoveredGpuTemperatureMaxC,
+            _settings.RecoveredInferenceLatencyMaxMs,
+            _settings.RecoveredFpsMin);
+
+        if (evaluation.ShouldResetObservation)
+        {
+            _recoveringSince[incident.Id] = DateTimeOffset.UtcNow;
+            _logger.LogInformation(
+                "Observation reset incident_id={IncidentId} device_id={DeviceId} reason={Reason}",
+                incident.Id,
+                incident.DeviceId,
+                evaluation.Reason);
+            return;
+        }
+
+        if (!evaluation.IsRecovered)
         {
             _logger.LogDebug(
-                "Incident {IncidentId} still recovering. Recent samples={Count}",
+                "Still recovering incident_id={IncidentId} device_id={DeviceId} reason={Reason}",
                 incident.Id,
-                recent.Count);
+                incident.DeviceId,
+                evaluation.Reason);
             return;
         }
 
@@ -190,37 +230,17 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
                     CompletedAt = DateTimeOffset.UtcNow
                 };
                 await _actions.UpdateAsync(verified, cancellationToken);
+                Activity.Current?.SetTag("action.id", action.Id);
             }
         }
 
         _recoveringSince.TryRemove(incident.Id, out _);
 
         _logger.LogWarning(
-            "Incident {IncidentId} RESOLVED after safe-profile recovery for {DeviceId}.",
+            "Incident RESOLVED incident_id={IncidentId} device_id={DeviceId} action_id={ActionId} reason={Reason}",
             incident.Id,
-            incident.DeviceId);
-    }
-
-    private bool IsRecovered(IReadOnlyList<TelemetryReading> recent)
-    {
-        if (recent.Count == 0)
-        {
-            return false;
-        }
-
-        var safeSamples = recent.Where(x => x.Profile == DeviceProfile.Safe).ToList();
-        if (safeSamples.Count == 0)
-        {
-            return false;
-        }
-
-        var avgGpu = safeSamples.Average(x => x.GpuTemperature);
-        var avgLatency = safeSamples.Average(x => x.InferenceLatencyMs);
-        var avgFps = safeSamples.Average(x => x.Fps);
-
-        return avgGpu <= _settings.RecoveredGpuTemperatureMaxC
-            && avgLatency <= _settings.RecoveredInferenceLatencyMaxMs
-            && avgFps >= _settings.RecoveredFpsMin
-            && safeSamples.All(x => x.Status == DeviceStatus.Healthy);
+            incident.DeviceId,
+            incident.RemediationId,
+            evaluation.Reason);
     }
 }

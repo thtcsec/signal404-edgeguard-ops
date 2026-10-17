@@ -13,7 +13,13 @@ public sealed class UnimplementedDeviceRepository : IDeviceRepository
     public Task UpsertAsync(DeviceRecord device, CancellationToken cancellationToken) =>
         PlaceholderResults.NotReady();
 
-    public Task SetProfileAsync(string deviceId, DeviceProfile profile, CancellationToken cancellationToken) =>
+    public Task SetCommandedProfileAsync(
+        string deviceId,
+        DeviceProfile profile,
+        CancellationToken cancellationToken) =>
+        PlaceholderResults.NotReady();
+
+    public Task SetStatusAsync(string deviceId, DeviceStatus status, CancellationToken cancellationToken) =>
         PlaceholderResults.NotReady();
 }
 

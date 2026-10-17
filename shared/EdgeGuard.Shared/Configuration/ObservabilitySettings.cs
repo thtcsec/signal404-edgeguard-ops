@@ -7,7 +7,7 @@ public sealed class ObservabilitySettings
     public string ServiceName { get; set; } = "edgeguard";
 
     /// <summary>
-    /// Stays false until Datadog tracing and DogStatsD are wired during the build window.
+    /// When false, metrics use NoOp and the stack still runs without an agent.
     /// </summary>
     public bool DatadogEnabled { get; set; }
 
@@ -16,4 +16,8 @@ public sealed class ObservabilitySettings
     public int DogStatsDPort { get; set; } = 8125;
 
     public int TraceAgentPort { get; set; } = 8126;
+
+    public string EnvironmentName { get; set; } = "development";
+
+    public string Version { get; set; } = "0.1.0";
 }

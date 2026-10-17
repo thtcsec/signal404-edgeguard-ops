@@ -62,3 +62,6 @@ Implemented after the official window opened (not part of the pre-hackathon base
 - Health analyzer with `$setWindowFields` trend comparison and thermal incident creation
 - Response worker safe-profile remediation with observation window before RESOLVED
 - Simulator profile sync so remediation is not overwritten by telemetry
+- Commanded vs reported profile separation; atomic device status updates
+- Continuous recovery evidence rules (stale/gap resets observation)
+- Optional Datadog DogStatsD/APM/logging integration and reproducible dashboard/monitor definitions

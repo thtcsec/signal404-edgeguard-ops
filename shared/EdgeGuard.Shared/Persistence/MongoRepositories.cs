@@ -33,12 +33,33 @@ public sealed class MongoDeviceRepository : IDeviceRepository
             cancellationToken);
     }
 
-    public async Task SetProfileAsync(string deviceId, DeviceProfile profile, CancellationToken cancellationToken)
+    public Task SetCommandedProfileAsync(
+        string deviceId,
+        DeviceProfile profile,
+        CancellationToken cancellationToken) =>
+        SetFieldAsync(
+            deviceId,
+            Builders<DeviceDocument>.Update.Set(x => x.Profile, DomainMappings.FormatProfile(profile)),
+            "commanded profile",
+            cancellationToken);
+
+    public Task SetStatusAsync(
+        string deviceId,
+        DeviceStatus status,
+        CancellationToken cancellationToken) =>
+        SetFieldAsync(
+            deviceId,
+            Builders<DeviceDocument>.Update.Set(x => x.Status, DomainMappings.FormatStatus(status)),
+            "status",
+            cancellationToken);
+
+    private async Task SetFieldAsync(
+        string deviceId,
+        UpdateDefinition<DeviceDocument> update,
+        string fieldName,
+        CancellationToken cancellationToken)
     {
         await _context.EnsureInitializedAsync(cancellationToken);
-        var update = Builders<DeviceDocument>.Update
-            .Set(x => x.Profile, DomainMappings.FormatProfile(profile));
-
         var result = await _context.Devices.UpdateOneAsync(
             x => x.Id == deviceId,
             update,
@@ -46,7 +67,7 @@ public sealed class MongoDeviceRepository : IDeviceRepository
 
         if (result.MatchedCount == 0)
         {
-            throw new InvalidOperationException($"Device '{deviceId}' was not found when setting profile.");
+            throw new InvalidOperationException($"Device '{deviceId}' was not found when setting {fieldName}.");
         }
     }
 }

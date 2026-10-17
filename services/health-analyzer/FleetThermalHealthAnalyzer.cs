@@ -61,14 +61,16 @@ public sealed class FleetThermalHealthAnalyzer : IFleetHealthAnalyzer
             }
 
             var incident = CreateIncident(snapshot);
-            using (TraceSources.ActivitySource.StartActivity(TraceSources.OpenIncident))
+            using (var openActivity = TraceSources.ActivitySource.StartActivity(TraceSources.OpenIncident))
             {
+                openActivity?.SetTag("device.id", snapshot.DeviceId);
+                openActivity?.SetTag("incident.id", incident.Id);
                 await _incidents.InsertAsync(incident, cancellationToken);
             }
 
             opened++;
             _logger.LogWarning(
-                "Opened thermal incident {IncidentId} for {DeviceId}: gpu1m={Gpu1m:F1}C gpu5m={Gpu5m:F1}C latency1m={Latency1m:F1}ms fps1m={Fps1m:F1} packetLoss1m={PacketLoss:F2}% netLatency1m={NetLatency:F1}ms",
+                "Opened thermal incident incident_id={IncidentId} device_id={DeviceId}: gpu1m={Gpu1m:F1}C gpu5m={Gpu5m:F1}C latency1m={Latency1m:F1}ms fps1m={Fps1m:F1} packetLoss1m={PacketLoss:F2}% netLatency1m={NetLatency:F1}ms",
                 incident.Id,
                 snapshot.DeviceId,
                 snapshot.GpuTemp1m,

@@ -41,8 +41,8 @@ def main() -> int:
     devices = build_devices(config.device_count)
     generator = TelemetryGenerator(seed=404)
     client = TelemetryClient(config.telemetry_url)
-    # Local cache of commanded profiles. Remediation updates MongoDB; we sync via GET/POST response.
-    profiles: dict[str, str] = {device.device_id: "full" for device in devices}
+    # Local applied profile cache, synced from commanded profile.
+    applied_profiles: dict[str, str] = {device.device_id: "full" for device in devices}
     stop = False
 
     def _handle_stop(_signum: int, _frame: object) -> None:
@@ -62,17 +62,20 @@ def main() -> int:
 
     while not stop:
         for device in devices:
-            commanded = client.get_device_profile(device.device_id, default=profiles[device.device_id])
-            profiles[device.device_id] = commanded
+            commanded = client.get_commanded_profile(
+                device.device_id, default=applied_profiles[device.device_id]
+            )
+            applied_profiles[device.device_id] = commanded
             sample = generator.next_sample(device, scenario, profile=commanded)
             result = client.post(sample)
             if result.commanded_profile in {"full", "reduced", "safe"}:
-                profiles[device.device_id] = result.commanded_profile
+                applied_profiles[device.device_id] = result.commanded_profile
             print(
                 f"{sample.timestamp.isoformat()} {device.device_id} "
                 f"gpu={sample.gpu_temperature:.1f}C fps={sample.fps:.1f} "
                 f"lat={sample.inference_latency_ms:.1f}ms status={sample.status} "
-                f"profile={profiles[device.device_id]} http={result.http_status}",
+                f"reported_profile={sample.profile} commanded_profile={applied_profiles[device.device_id]} "
+                f"http={result.http_status}",
                 flush=True,
             )
         time.sleep(config.interval_seconds)

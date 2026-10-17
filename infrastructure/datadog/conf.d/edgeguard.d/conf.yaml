@@ -1,0 +1,4 @@
+# Custom log/source hints for EdgeGuard Ops host processes (optional).
+# Primary metrics arrive via DogStatsD; APM via the trace agent.
+
+logs: []

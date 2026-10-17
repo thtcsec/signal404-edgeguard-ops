@@ -1,0 +1,27 @@
+# Development Datadog Agent config for EdgeGuard Ops.
+# Secrets (DD_API_KEY) must come from environment / .env — never commit real keys.
+
+api_key: ${DD_API_KEY}
+site: ${DD_SITE}
+hostname: edgeguard-local
+env: development
+
+apm_config:
+  enabled: true
+  non_local_traffic: true
+
+dogstatsd_non_local_traffic: true
+dogstatsd_port: 8125
+
+logs_enabled: true
+logs_config:
+  container_collect_all: false
+  auto_multi_line_detection: true
+
+process_config:
+  process_collection:
+    enabled: false
+
+inventories_configuration_enabled: false
+remote_configuration:
+  enabled: false

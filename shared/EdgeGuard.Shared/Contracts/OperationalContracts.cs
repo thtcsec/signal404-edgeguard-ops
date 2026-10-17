@@ -8,7 +8,15 @@ public interface IDeviceRepository
 
     Task UpsertAsync(DeviceRecord device, CancellationToken cancellationToken);
 
-    Task SetProfileAsync(string deviceId, DeviceProfile profile, CancellationToken cancellationToken);
+    /// <summary>
+    /// Atomically sets commanded profile only ($set), never replacing the whole document.
+    /// </summary>
+    Task SetCommandedProfileAsync(string deviceId, DeviceProfile profile, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Atomically sets operational status only ($set), preserving commanded profile under concurrency.
+    /// </summary>
+    Task SetStatusAsync(string deviceId, DeviceStatus status, CancellationToken cancellationToken);
 }
 
 public interface ITelemetryRepository

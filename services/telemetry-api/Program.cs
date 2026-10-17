@@ -7,7 +7,9 @@ using EdgeGuard.Shared.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEdgeGuardConfiguration(builder.Configuration);
+builder.Services.AddEdgeGuardObservability(builder.Configuration);
 builder.Services.AddEdgeGuardMongo();
+builder.Logging.AddEdgeGuardJsonConsole();
 
 var app = builder.Build();
 
@@ -18,7 +20,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Logger.LogInformation(
-    "Telemetry API ready. Device profile is authoritative; ingest will not overwrite remediations.");
+    "Telemetry API ready. Commanded profile is authoritative; reported profile is stored as received.");
 
 app.MapGet("/health", async (EdgeGuardMongoContext mongo, CancellationToken cancellationToken) =>
 {
@@ -61,36 +63,62 @@ app.MapPost("/telemetry", async (
 
     try
     {
-        var reading = request.ToReading();
-        var existing = await deviceRepository.GetAsync(reading.Metadata.DeviceId, cancellationToken);
+        // Keep the reported profile from the device/simulator. Do not rewrite it to commanded.
+        var reported = request.ToReading();
+        var existing = await deviceRepository.GetAsync(reported.Metadata.DeviceId, cancellationToken);
+        var commandedProfile = existing?.Profile ?? reported.Profile;
 
-        // Device profile is owned by remediation. Telemetry must not clobber a commanded safe/reduced profile.
-        var authoritativeProfile = existing?.Profile ?? reading.Profile;
-        reading = reading with { Profile = authoritativeProfile };
+        activity?.SetTag("profile.commanded", DomainMappings.FormatProfile(commandedProfile));
+        activity?.SetTag("profile.reported", DomainMappings.FormatProfile(reported.Profile));
 
         using (TraceSources.ActivitySource.StartActivity(TraceSources.InsertTelemetry))
         {
-            await telemetryRepository.InsertAsync(reading, cancellationToken);
+            await telemetryRepository.InsertAsync(reported, cancellationToken);
         }
 
-        await UpsertDeviceFromTelemetryAsync(deviceRepository, existing, reading, cancellationToken);
-        operationalTelemetry.RecordDeviceSample(reading);
+        if (existing is null)
+        {
+            var created = new DeviceRecord(
+                reported.Metadata.DeviceId,
+                $"Edge Camera {reported.Metadata.DeviceId}",
+                reported.Metadata.Site,
+                reported.Metadata.Line,
+                "edge-camera",
+                new HardwareInfo("synthetic-cpu", "synthetic-gpu"),
+                commandedProfile,
+                reported.Status,
+                DateTimeOffset.UtcNow);
+            await deviceRepository.UpsertAsync(created, cancellationToken);
+        }
+        else if (existing.Status != reported.Status)
+        {
+            // Atomic $set on status only — never ReplaceOne the whole device document.
+            await deviceRepository.SetStatusAsync(
+                reported.Metadata.DeviceId,
+                reported.Status,
+                cancellationToken);
+        }
+
+        operationalTelemetry.RecordDeviceSample(reported);
 
         logger.LogInformation(
-            "Ingested telemetry device={DeviceId} site={Site} line={Line} gpuTemp={GpuTemperature:F1} fps={Fps:F1} latencyMs={Latency:F1} profile={Profile}",
-            reading.Metadata.DeviceId,
-            reading.Metadata.Site,
-            reading.Metadata.Line,
-            reading.GpuTemperature,
-            reading.Fps,
-            reading.InferenceLatencyMs,
-            DomainMappings.FormatProfile(authoritativeProfile));
+            "Ingested telemetry device_id={DeviceId} site={Site} line={Line} gpuTemp={GpuTemperature:F1} fps={Fps:F1} latencyMs={Latency:F1} commanded_profile={CommandedProfile} reported_profile={ReportedProfile} status={Status}",
+            reported.Metadata.DeviceId,
+            reported.Metadata.Site,
+            reported.Metadata.Line,
+            reported.GpuTemperature,
+            reported.Fps,
+            reported.InferenceLatencyMs,
+            DomainMappings.FormatProfile(commandedProfile),
+            DomainMappings.FormatProfile(reported.Profile),
+            DomainMappings.FormatStatus(reported.Status));
 
         return Results.Accepted(value: new TelemetryAcceptedResponse(
-            reading.Metadata.DeviceId,
-            reading.Timestamp,
-            DomainMappings.FormatProfile(authoritativeProfile),
-            DomainMappings.FormatStatus(reading.Status)));
+            reported.Metadata.DeviceId,
+            reported.Timestamp,
+            DomainMappings.FormatProfile(commandedProfile),
+            DomainMappings.FormatProfile(reported.Profile),
+            DomainMappings.FormatStatus(reported.Status)));
     }
     catch (ArgumentException ex)
     {
@@ -98,7 +126,7 @@ app.MapPost("/telemetry", async (
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Telemetry ingest failed for device {DeviceId}", request.DeviceId);
+        logger.LogError(ex, "Telemetry ingest failed for device_id={DeviceId}", request.DeviceId);
         return Results.Problem(
             title: "Telemetry ingest failed",
             detail: ex.Message,
@@ -108,40 +136,11 @@ app.MapPost("/telemetry", async (
 
 app.Run();
 
-static async Task UpsertDeviceFromTelemetryAsync(
-    IDeviceRepository deviceRepository,
-    DeviceRecord? existing,
-    TelemetryReading reading,
-    CancellationToken cancellationToken)
-{
-    if (existing is null)
-    {
-        var created = new DeviceRecord(
-            reading.Metadata.DeviceId,
-            $"Edge Camera {reading.Metadata.DeviceId}",
-            reading.Metadata.Site,
-            reading.Metadata.Line,
-            "edge-camera",
-            new HardwareInfo("synthetic-cpu", "synthetic-gpu"),
-            reading.Profile,
-            reading.Status,
-            DateTimeOffset.UtcNow);
-        await deviceRepository.UpsertAsync(created, cancellationToken);
-        return;
-    }
-
-    if (existing.Status != reading.Status)
-    {
-        var updated = existing with { Status = reading.Status };
-        await deviceRepository.UpsertAsync(updated, cancellationToken);
-    }
-}
-
 internal sealed record HealthResponse(string Status, string Service, bool Scaffold, bool MongoOk);
 
 internal sealed record DeviceProfileResponse(
     string DeviceId,
-    string Profile,
+    string CommandedProfile,
     string Status,
     string Site,
     string Line);
@@ -149,7 +148,8 @@ internal sealed record DeviceProfileResponse(
 internal sealed record TelemetryAcceptedResponse(
     string DeviceId,
     DateTimeOffset Timestamp,
-    string Profile,
+    string CommandedProfile,
+    string ReportedProfile,
     string Status);
 
 public partial class Program;

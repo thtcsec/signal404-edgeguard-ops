@@ -12,6 +12,7 @@ from edgeguard_simulator.models import TelemetrySample
 class IngestResult:
     http_status: int
     commanded_profile: str | None
+    reported_profile: str | None
 
 
 class TelemetryClient:
@@ -19,7 +20,7 @@ class TelemetryClient:
         self._base_url = base_url.rstrip("/")
         self._timeout = timeout_seconds
 
-    def get_device_profile(self, device_id: str, default: str = "full") -> str:
+    def get_commanded_profile(self, device_id: str, default: str = "full") -> str:
         request = urllib.request.Request(
             f"{self._base_url}/devices/{device_id}",
             method="GET",
@@ -27,7 +28,10 @@ class TelemetryClient:
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-                profile = str(payload.get("profile", default)).lower()
+                # Prefer commandedProfile; fall back to legacy "profile" during rollout.
+                profile = str(
+                    payload.get("commandedProfile") or payload.get("profile") or default
+                ).lower()
                 return profile if profile in {"full", "reduced", "safe"} else default
         except urllib.error.HTTPError as error:
             if error.code == 404:
@@ -47,10 +51,12 @@ class TelemetryClient:
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-                profile = payload.get("profile")
+                commanded = payload.get("commandedProfile") or payload.get("profile")
+                reported = payload.get("reportedProfile")
                 return IngestResult(
                     http_status=int(response.status),
-                    commanded_profile=str(profile).lower() if profile else None,
+                    commanded_profile=str(commanded).lower() if commanded else None,
+                    reported_profile=str(reported).lower() if reported else None,
                 )
         except urllib.error.HTTPError as error:
-            return IngestResult(http_status=int(error.code), commanded_profile=None)
+            return IngestResult(http_status=int(error.code), commanded_profile=None, reported_profile=None)

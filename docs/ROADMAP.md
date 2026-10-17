@@ -16,11 +16,11 @@ Submission deadline: **2026-10-31 23:59 ICT**.
 2. Implement ingest on `POST /telemetry` and synthetic simulator (`NORMAL`, `THERMAL_THROTTLE`, …).
 3. Health analyzer: aggregation + `$setWindowFields`, open thermal incident.
 4. Response worker: poll incidents, switch to safe profile, observe recovery, resolve.
-5. Simulator honors commanded device profile (does not overwrite remediations).
+5. Commanded vs reported profile; atomic status updates; continuous recovery evidence.
+6. Datadog DogStatsD + APM hooks + repo-defined dashboard/monitor (agent optional).
 
 ### Next
 
-6. Datadog: metrics/logs/traces, dashboard, thermal monitor.
 7. Demo video, slides, submission disclosure.
 
 ## Explicitly deferred
