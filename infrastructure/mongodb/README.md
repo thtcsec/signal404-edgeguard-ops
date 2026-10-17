@@ -1,7 +1,12 @@
 # MongoDB
 
-Local development uses the `mongodb` service in the root `docker-compose.yml` (`mongo:8`, port 27017, database `edgeguard`). No users are created. No collections are created.
+Local development uses the `mongodb` service in the root `docker-compose.yml` (`mongo:8`, port 27017, database `edgeguard`).
 
-`scripts/dev-up.ps1` starts that container. `scripts/seed-placeholder.ps1` does not insert documents.
+`scripts/dev-up.ps1` starts that container.
 
-Collection names, the time-series options, TTL, and the planned `$setWindowFields` pipeline are in [docs/DATA_MODEL.md](../../docs/DATA_MODEL.md). Creating them is a build-window task. The MongoDB .NET driver is intentionally not referenced yet.
+On first API start, `EdgeGuardMongoContext` creates:
+
+- `telemetry` — time-series (`timestamp`, `metadata`, granularity seconds, `expireAfterSeconds` from config, default 14 days)
+- `devices`, `incidents`, `remediation_actions` — regular collections + indexes
+
+The MongoDB .NET driver is referenced from `EdgeGuard.Shared`. See [docs/DATA_MODEL.md](../../docs/DATA_MODEL.md).

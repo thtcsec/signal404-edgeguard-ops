@@ -1,3 +1,7 @@
-Write-Host "Seed is not implemented. No devices or telemetry were written."
-Write-Host "Implement synthetic seeding during 2026-10-10 to 2026-10-24."
+$ErrorActionPreference = "Stop"
+Write-Host "Prefer the Python simulator for seeding synthetic telemetry:"
+Write-Host '  cd apps/device-simulator'
+Write-Host '  $env:PYTHONPATH = "src"'
+Write-Host '  $env:EDGEGUARD_SCENARIO = "NORMAL"'
+Write-Host '  python -m edgeguard_simulator.main'
 exit 0

@@ -2,7 +2,7 @@
 
 **Signal404** · real-time observability and automated incident response for IoT and edge AI device fleets.
 
-> Current status: Pre-hackathon scaffold. Core competition functionality has not yet been implemented.
+> Current status: Official build window in progress (17/10 → 31/10). Telemetry ingest and synthetic simulator are live. Incident detection, remediation, and Datadog wiring are next.
 
 ## Problem
 
@@ -40,7 +40,7 @@ The boxes exist as projects and contracts. The arrows are not implemented. See [
 
 ## Hackathon
 
-MUGVN Hackathon 2026, IoT Real-time Operations, with MongoDB and Datadog. Official build window: 2026-10-10 through 2026-10-24. This repository was scaffolded on 2026-09-30 and must be declared as pre-existing baseline. The judged core will be written inside the build window. Disclosure details are in [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md).
+MUGVN Hackathon 2026, Real-time Operations, with MongoDB and Datadog. Official build window: 2026-10-17 through 2026-10-31. Submission deadline: 2026-10-31 23:59 ICT. This repository was scaffolded on 2026-09-30 and must be declared as pre-existing baseline. Disclosure details are in [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md).
 
 ## Planned stack
 
@@ -54,7 +54,7 @@ The demo story is Detect, Investigate, Respond, Verify Recovery. No Kubernetes, 
 
 ## Planned MongoDB usage
 
-MongoDB will be the operational store. Telemetry will use a time-series collection (`timestamp`, `metadata`, granularity `seconds`, `expireAfterSeconds` from configuration). Devices, incidents, and remediation actions will use regular collections. Trend detection will use an aggregation pipeline and `$setWindowFields`. Change streams are the planned signal into the response worker. The data model is documented in [docs/DATA_MODEL.md](docs/DATA_MODEL.md). Collection creation and the pipeline are not in this scaffold.
+MongoDB will be the operational store. Telemetry will use a time-series collection (`timestamp`, `metadata`, granularity `seconds`, `expireAfterSeconds` from configuration). Devices, incidents, and remediation actions will use regular collections. Trend detection will use an aggregation pipeline and `$setWindowFields`. Change streams are the planned signal into the response worker. The data model is documented in [docs/DATA_MODEL.md](docs/DATA_MODEL.md). Time-series collection creation with `expireAfterSeconds`, device upsert, and ingest are implemented. Aggregation / `$setWindowFields` incident detection comes next.
 
 ## Planned Datadog usage
 
@@ -76,25 +76,25 @@ None of those steps run today.
 
 ## Layout
 
-| Path | Role in this scaffold |
+| Path | Role |
 | --- | --- |
-| `services/telemetry-api` | `GET /health`, `POST /telemetry` returns 501 |
-| `services/health-analyzer` | Idle worker |
-| `services/response-worker` | Idle worker |
-| `shared/EdgeGuard.Shared` | Settings, records, interfaces, metric names, placeholders |
-| `apps/device-simulator` | Models and scenario names; generator raises `NotImplementedError` |
-| `observability/datadog` | Written plans, not live monitors |
-| `docs` | Design and the pre-hackathon disclosure |
+| `services/telemetry-api` | `GET /health`, `POST /telemetry` writes MongoDB time-series |
+| `services/health-analyzer` | Idle worker (detection next) |
+| `services/response-worker` | Idle worker (remediation next) |
+| `shared/EdgeGuard.Shared` | Settings, domain, Mongo repositories |
+| `apps/device-simulator` | Synthetic fleet; `NORMAL` / `THERMAL_THROTTLE` / more |
+| `observability/datadog` | Plans; live Datadog wiring next |
+| `docs` | Design and pre-hackathon disclosure |
 
 ## Develop
 
 Requirements: .NET 9 SDK (`global.json` selects the 9.x feature band), Python 3.11+, Docker if you want local MongoDB. A .NET 10 SDK alone cannot build `net9.0`.
 
 ```powershell
-dotnet build EdgeGuardOps.sln
-dotnet test EdgeGuardOps.sln
+& "$env:USERPROFILE\.dotnet\dotnet.exe" build EdgeGuardOps.sln
+& "$env:USERPROFILE\.dotnet\dotnet.exe" test EdgeGuardOps.sln
 .\scripts\dev-up.ps1
-dotnet run --project services/telemetry-api
+& "$env:USERPROFILE\.dotnet\dotnet.exe" run --project services/telemetry-api
 ```
 
 From `apps/device-simulator`:
@@ -102,9 +102,10 @@ From `apps/device-simulator`:
 ```powershell
 python -m pip install -r requirements.txt
 python -m pytest
+$env:PYTHONPATH = "src"
+$env:EDGEGUARD_SCENARIO = "THERMAL_THROTTLE"
+$env:EDGEGUARD_DEVICE_COUNT = "3"
 python -m edgeguard_simulator.main
 ```
-
-The simulator exits with code 2. `.\scripts\seed-placeholder.ps1` writes nothing.
 
 Copy `.env.example` to `.env` only on your machine. Do not commit credentials. Application defaults in `appsettings.json` point at `mongodb://localhost:27017` and keep Datadog disabled.

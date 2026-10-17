@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import Enum
 
@@ -37,3 +37,26 @@ class TelemetrySample:
     dropped_frames: int
     profile: str
     status: str
+
+    def _replace(self, **kwargs: object) -> "TelemetrySample":
+        return replace(self, **kwargs)
+
+    def to_payload(self) -> dict[str, object]:
+        return {
+            "deviceId": self.device_id,
+            "site": self.site,
+            "line": self.line,
+            "timestamp": self.timestamp.isoformat().replace("+00:00", "Z"),
+            "cpuUsage": self.cpu_usage,
+            "memoryUsage": self.memory_usage,
+            "cpuTemperature": self.cpu_temperature,
+            "gpuTemperature": self.gpu_temperature,
+            "gpuUsage": self.gpu_usage,
+            "fps": self.fps,
+            "inferenceLatencyMs": self.inference_latency_ms,
+            "packetLossPct": self.packet_loss_pct,
+            "networkLatencyMs": self.network_latency_ms,
+            "droppedFrames": self.dropped_frames,
+            "profile": self.profile,
+            "status": self.status,
+        }

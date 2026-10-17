@@ -9,10 +9,10 @@ This file is the disclosure record for code that exists before the official MUGV
 | Project | EdgeGuard Ops |
 | Team | Signal404 |
 | Repository created | 2026-09-30 |
-| Official build window | 2026-10-10 to 2026-10-24 |
+| Official build window | 2026-10-17 to 2026-10-31 (updated by organizers) |
 | Scope of this baseline | Project structure, contracts, DTOs, configuration, documentation, and placeholder services |
 
-The scaffold was created before the official build period. It contains only project structure, contracts, DTOs, configuration, documentation, and placeholder services. Core hackathon functionality will be implemented during 2026-10-10 to 2026-10-24.
+The scaffold was created before the official build period. It contains only project structure, contracts, DTOs, configuration, documentation, and placeholder services. Core hackathon functionality is implemented during 2026-10-17 to 2026-10-31.
 
 The following are explicitly absent:
 
@@ -50,4 +50,12 @@ Copying or adapting libraries during the build window still has to be declared i
 - One operational dashboard and at least one monitor, plus the extra Datadog capability used in the demo
 - Demo script, video, slides, and the final submission disclosure
 
-Anything implemented after 2026-10-10 should stay distinguishable from this list when the submission declares reused work.
+Anything implemented on or after 2026-10-17 should stay distinguishable from the pre-window baseline when the submission declares reused work.
+
+## Build-window progress (started 2026-10-17)
+
+Implemented after the official window opened (not part of the pre-hackathon baseline):
+
+- MongoDB.Driver wiring, time-series collection bootstrap with TTL
+- Real `POST /telemetry` ingest and device upsert
+- Python simulator scenarios that emit synthetic telemetry

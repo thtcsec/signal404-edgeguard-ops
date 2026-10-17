@@ -1,5 +1,12 @@
 # telemetry-api
 
-ASP.NET Core 9 minimal API scaffold.
+ASP.NET Core 9 minimal API.
 
-`GET /health` reports that the process is up. `POST /telemetry` returns HTTP 501. Device and telemetry repositories are registered as placeholders and are not called.
+- `GET /health` — process + MongoDB ping
+- `POST /telemetry` — validate payload, insert into MongoDB time-series, upsert device
+
+```powershell
+& "$env:USERPROFILE\.dotnet\dotnet.exe" run --project .
+```
+
+Listens on `http://localhost:5080` in Development (`Properties/launchSettings.json`).

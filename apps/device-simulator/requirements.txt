@@ -1,2 +1,3 @@
-# Scaffold tests only. Add runtime packages for the simulator during the build window.
+# Runtime uses only the Python standard library.
+# Test dependency:
 pytest>=8.3,<9

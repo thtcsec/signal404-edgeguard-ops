@@ -23,7 +23,7 @@ public sealed class MongoDbSettings
     public string TelemetryGranularity { get; set; } = "seconds";
 
     /// <summary>
-    /// Planned TTL for telemetry time-series documents. Collection creation is a build-window task.
+    /// TTL for telemetry time-series documents (default 14 days).
     /// </summary>
     public int TelemetryExpireAfterSeconds { get; set; } = 1_209_600;
 }
