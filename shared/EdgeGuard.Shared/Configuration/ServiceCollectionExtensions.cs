@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<MongoDbSettings>(configuration.GetSection(MongoDbSettings.SectionName));
         services.Configure<ObservabilitySettings>(configuration.GetSection(ObservabilitySettings.SectionName));
+        services.Configure<AnalyzerSettings>(configuration.GetSection(AnalyzerSettings.SectionName));
         services.AddSingleton<IOperationalTelemetry, NoOpOperationalTelemetry>();
         return services;
     }

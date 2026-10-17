@@ -20,6 +20,11 @@ public interface IIncidentRepository
 
     Task<IncidentRecord?> GetAsync(string incidentId, CancellationToken cancellationToken);
 
+    Task<IncidentRecord?> FindActiveByDeviceAndTypeAsync(
+        string deviceId,
+        IncidentType type,
+        CancellationToken cancellationToken);
+
     Task UpdateStatusAsync(
         string incidentId,
         IncidentStatus status,

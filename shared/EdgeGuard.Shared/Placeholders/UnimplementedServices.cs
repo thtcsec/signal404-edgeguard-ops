@@ -28,6 +28,12 @@ public sealed class UnimplementedIncidentRepository : IIncidentRepository
     public Task<IncidentRecord?> GetAsync(string incidentId, CancellationToken cancellationToken) =>
         PlaceholderResults.NotReady<IncidentRecord?>();
 
+    public Task<IncidentRecord?> FindActiveByDeviceAndTypeAsync(
+        string deviceId,
+        IncidentType type,
+        CancellationToken cancellationToken) =>
+        PlaceholderResults.NotReady<IncidentRecord?>();
+
     public Task UpdateStatusAsync(
         string incidentId,
         IncidentStatus status,

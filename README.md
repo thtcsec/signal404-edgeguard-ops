@@ -2,7 +2,7 @@
 
 **Signal404** · real-time observability and automated incident response for IoT and edge AI device fleets.
 
-> Current status: Official build window in progress (17/10 → 31/10). Telemetry ingest and synthetic simulator are live. Incident detection, remediation, and Datadog wiring are next.
+> Current status: Official build window in progress (17/10 → 31/10). Ingest, simulator, and thermal incident detection are live. Remediation and Datadog wiring are next.
 
 ## Problem
 
@@ -79,7 +79,7 @@ None of those steps run today.
 | Path | Role |
 | --- | --- |
 | `services/telemetry-api` | `GET /health`, `POST /telemetry` writes MongoDB time-series |
-| `services/health-analyzer` | Idle worker (detection next) |
+| `services/health-analyzer` | `$setWindowFields` trends → open thermal incidents |
 | `services/response-worker` | Idle worker (remediation next) |
 | `shared/EdgeGuard.Shared` | Settings, domain, Mongo repositories |
 | `apps/device-simulator` | Synthetic fleet; `NORMAL` / `THERMAL_THROTTLE` / more |

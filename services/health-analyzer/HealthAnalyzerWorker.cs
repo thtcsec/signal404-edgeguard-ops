@@ -1,4 +1,6 @@
+using EdgeGuard.Shared.Configuration;
 using EdgeGuard.Shared.Contracts;
+using Microsoft.Extensions.Options;
 
 namespace EdgeGuard.HealthAnalyzer;
 
@@ -6,31 +8,49 @@ public sealed class HealthAnalyzerWorker : BackgroundService
 {
     private readonly ILogger<HealthAnalyzerWorker> _logger;
     private readonly IFleetHealthAnalyzer _analyzer;
+    private readonly AnalyzerSettings _settings;
 
-    public HealthAnalyzerWorker(ILogger<HealthAnalyzerWorker> logger, IFleetHealthAnalyzer analyzer)
+    public HealthAnalyzerWorker(
+        ILogger<HealthAnalyzerWorker> logger,
+        IFleetHealthAnalyzer analyzer,
+        IOptions<AnalyzerSettings> settings)
     {
         _logger = logger;
         _analyzer = analyzer;
+        _settings = settings.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var interval = TimeSpan.FromSeconds(Math.Max(5, _settings.IntervalSeconds));
         _logger.LogInformation(
-            "Health analyzer pre-hackathon scaffold is idle. Registered analyzer: {Analyzer}. Trend detection is not implemented.",
+            "Health analyzer started. Interval={IntervalSeconds}s Analyzer={Analyzer}",
+            interval.TotalSeconds,
             _analyzer.GetType().Name);
 
-        // TODO(build-window): call IFleetHealthAnalyzer.AnalyzeAsync on an interval.
-        // Use an aggregation pipeline with $setWindowFields to compare the current
-        // 1-minute average against the previous 5-minute rolling average, then insert
-        // an incident when degradation is confirmed. Do not call the placeholder here:
-        // it throws NotSupportedException.
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await _analyzer.AnalyzeAsync(stoppingToken);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Health analysis cycle failed.");
+            }
 
-        try
-        {
-            await Task.Delay(Timeout.Infinite, stoppingToken);
-        }
-        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-        {
+            try
+            {
+                await Task.Delay(interval, stoppingToken);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
         }
     }
 }

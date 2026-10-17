@@ -134,9 +134,9 @@ Action types: `SWITCH_TO_SAFE_PROFILE`, `REDUCE_INFERENCE_RATE`, `RESTART_INFERE
 
 States: `REQUESTED`, `APPLIED`, `VERIFIED`, `FAILED`.
 
-## Planned analytics
+## Analytics
 
-These pipelines are design notes for the build window. They are not application code.
+Implemented in `FleetThermalHealthAnalyzer` during the official build window.
 
 ### Rolling GPU temperature and inference latency
 
@@ -170,4 +170,4 @@ The same window shape applies to FPS and dropped frames. Health rollups per devi
 current 1-minute average vs previous 5-minute rolling average
 ```
 
-Temperature and inference latency moving up together, while packet loss stays low, distinguishes thermal throttling from network degradation. That comparison is the investigation step. It is not implemented.
+Temperature and inference latency moving up together, while packet loss stays low, distinguishes thermal throttling from network degradation. When the signal fires and no active incident exists for the device, an `OPEN` incident is inserted into `incidents`.

@@ -74,6 +74,34 @@ public sealed class MongoIncidentRepository : IIncidentRepository
         return document?.ToDomain();
     }
 
+    public async Task<IncidentRecord?> FindActiveByDeviceAndTypeAsync(
+        string deviceId,
+        IncidentType type,
+        CancellationToken cancellationToken)
+    {
+        await _context.EnsureInitializedAsync(cancellationToken);
+        var typeValue = DomainMappings.FormatIncidentType(type);
+        var activeStatuses = new[]
+        {
+            DomainMappings.FormatIncidentStatus(IncidentStatus.Open),
+            DomainMappings.FormatIncidentStatus(IncidentStatus.Investigating),
+            DomainMappings.FormatIncidentStatus(IncidentStatus.Mitigating),
+            DomainMappings.FormatIncidentStatus(IncidentStatus.Recovering)
+        };
+
+        var filter = Builders<IncidentDocument>.Filter.And(
+            Builders<IncidentDocument>.Filter.Eq(x => x.DeviceId, deviceId),
+            Builders<IncidentDocument>.Filter.Eq(x => x.Type, typeValue),
+            Builders<IncidentDocument>.Filter.In(x => x.Status, activeStatuses));
+
+        var document = await _context.Incidents
+            .Find(filter)
+            .SortByDescending(x => x.DetectedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return document?.ToDomain();
+    }
+
     public async Task UpdateStatusAsync(
         string incidentId,
         IncidentStatus status,

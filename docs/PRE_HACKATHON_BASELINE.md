@@ -59,3 +59,4 @@ Implemented after the official window opened (not part of the pre-hackathon base
 - MongoDB.Driver wiring, time-series collection bootstrap with TTL
 - Real `POST /telemetry` ingest and device upsert
 - Python simulator scenarios that emit synthetic telemetry
+- Health analyzer with `$setWindowFields` trend comparison and thermal incident creation
