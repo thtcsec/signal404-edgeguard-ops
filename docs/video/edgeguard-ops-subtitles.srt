@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:24,384
+Xin chào ban giám khảo. Em là thành viên đội Signal404 với dự án EdgeGuard Ops. Trên nhà máy, camera AI edge chạy liên tục. Khi GPU
+nóng và thermal throttling xảy ra, FPS giảm — thường phát hiện muộn. Câu hỏi: phát hiện sớm, xử lý an toàn, và chứng minh đã hồi phục?
+
+2
+00:00:24,734 --> 00:00:47,870
+EdgeGuard Ops theo Detect → Investigate → Respond → Verify. MongoDB Time Series là nguồn sự
+thật; Datadog là mặt quan sát. Toàn bộ telemetry trong demo là synthetic, có nhãn rõ ràng.
+
+3
+00:00:48,220 --> 00:01:05,812
+Kịch bản thermal throttle trên simulator — dữ liệu giả lập.
+GPU tăng, latency tăng, FPS giảm. Health analyzer dùng $setWindowFields trên MongoDB.
+
+4
+00:01:06,162 --> 00:01:26,658
+Dashboard EdgeGuard Fleet Operations. Monitor demo chuyển Alert. Chúng em cố ý khởi động response-worker
+muộn để thấy Alert trước — demo staged, không phải MTTA tự động thuần túy.
+
+5
+00:01:27,008 --> 00:01:42,584
+Worker đặt commanded_profile=safe. Simulator báo reported_profile=safe. Tách commanded và
+reported để không nhầm telemetry full thành bằng chứng safe.
+
+6
+00:01:42,934 --> 00:02:10,894
+Recovery cần chuỗi mẫu healthy liên tục. Monitor ALERT → OK. MongoDB RESOLVED / remediation VERIFIED.
+Nếu OK chậm, cửa sổ ~2 phút có thể trễ — bằng chứng cứng là MongoDB.
+
+7
+00:02:11,244 --> 00:02:51,924
+Synthetic: GPU 92,3→54,1°C; latency 177,3→59,6 ms; FPS 12,1→18,0 (safe mode ≠ 30 FPS).
+40,9s = mẫu đầu → detect. 111s gồm trì hoãn worker có chủ đích.
+
+8
+00:02:52,274 --> 00:03:07,610
+APM live xác nhận trên telemetry-api. EdgeGuard Ops chứng minh Detect
+→ Investigate → Respond → Verify. Signal404. Cảm ơn ban giám khảo.

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "gpu",
+    "file": "datadog-graph-gpu.png",
+    "bytes": 32504,
+    "query": "avg:edgeguard.device.gpu_temperature{*}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320155026-a158386c-1f06-4880-a14d-3d8196c9e394.png"
+  },
+  {
+    "name": "latency",
+    "file": "datadog-graph-latency.png",
+    "bytes": 33743,
+    "query": "avg:edgeguard.device.inference_latency{*}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320159957-31c86119-7303-4aab-a48b-e07aede74642.png"
+  },
+  {
+    "name": "fps",
+    "file": "datadog-graph-fps.png",
+    "bytes": 26630,
+    "query": "avg:edgeguard.device.fps{*}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320164864-7c14e365-f5e8-4a12-be4f-f23e7ce94b18.png"
+  },
+  {
+    "name": "gpu-edge001",
+    "file": "datadog-graph-gpu-edge001.png",
+    "bytes": 32504,
+    "query": "avg:edgeguard.device.gpu_temperature{device_id:edge-001}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320169797-f962a842-af3a-4d2f-922a-8f04ae295958.png"
+  },
+  {
+    "name": "latency-edge001",
+    "file": "datadog-graph-latency-edge001.png",
+    "bytes": 33743,
+    "query": "avg:edgeguard.device.inference_latency{device_id:edge-001}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320174802-e7bacadb-bff6-4a8c-94f8-593c4e044cce.png"
+  },
+  {
+    "name": "fps-edge001",
+    "file": "datadog-graph-fps-edge001.png",
+    "bytes": 26630,
+    "query": "avg:edgeguard.device.fps{device_id:edge-001}",
+    "snapshot_url": "https://app.datadoghq.com/api/v2/snapshot/view/public/2y/5cdd710f-cacb-11f1-a201-9a62f21e6df1/1792320179794-f638ed75-39c1-4f24-8a36-51c4b96d34b5.png"
+  }
+]
