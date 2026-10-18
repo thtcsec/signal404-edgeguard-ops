@@ -2,93 +2,94 @@
   "output": "docs/video/edgeguard-ops-final-demo.mp4",
   "subtitles": "docs/video/edgeguard-ops-subtitles.srt",
   "voiceover": "docs/video/voiceover-vi.wav",
-  "duration_seconds": 187.833333,
-  "size_bytes": 27094170,
+  "backup_v1": "docs/video/edgeguard-ops-final-demo.v1-backup.mp4",
+  "duration_seconds": 178.833333,
+  "size_bytes": 5761076,
   "video_codec": "h264",
   "audio_codec": "aac",
   "width": 1920,
   "height": 1080,
   "fps": 30.0,
-  "voice": "vi-VN-NamMinhNeural",
+  "voice": "gTTS lang=vi (consistent across all segments)",
+  "tts_engine": "gtts",
+  "srt_cues": 36,
+  "silence_gap_seconds": 0.22,
   "segments": [
     {
       "id": "01_open",
       "t0": 0.0,
-      "t1": 24.384013605442178,
-      "display_text": "Xin chào ban giám khảo. Em là thành viên đội Signal404 với dự án EdgeGuard Ops. Trên nhà máy, camera AI edge chạy liên tục. Khi GPU nóng và thermal throttling xảy ra, FPS giảm — thường phát hiện muộn. Câu hỏi: phát hiện sớm, xử lý an toàn, và chứng minh đã hồi phục?",
-      "visual": "docs/video/scenes/01_open.mp4"
+      "t1": 25.87201814058957,
+      "scene_dur": 26.09201814058957
     },
     {
       "id": "02_arch",
-      "t0": 24.73401360544218,
-      "t1": 47.87002267573696,
-      "display_text": "EdgeGuard Ops theo Detect → Investigate → Respond → Verify. MongoDB Time Series là nguồn sự thật; Datadog là mặt quan sát. Toàn bộ telemetry trong demo là synthetic, có nhãn rõ ràng.",
-      "visual": "docs/video/scenes/02_arch.mp4"
+      "t0": 26.09201814058957,
+      "t1": 48.19603174603175,
+      "scene_dur": 22.324013605442175
     },
     {
       "id": "03_thermal",
-      "t0": 48.22002267573696,
-      "t1": 65.81204081632653,
-      "display_text": "Kịch bản thermal throttle trên simulator — dữ liệu giả lập. GPU tăng, latency tăng, FPS giảm. Health analyzer dùng $setWindowFields trên MongoDB.",
-      "visual": "docs/video/scenes/03_thermal.mp4"
+      "t0": 48.41603174603175,
+      "t1": 68.16804988662132,
+      "scene_dur": 19.97201814058957
     },
     {
       "id": "04_datadog_alert",
-      "t0": 66.16204081632654,
-      "t1": 86.65804988662133,
-      "display_text": "Dashboard EdgeGuard Fleet Operations. Monitor demo chuyển Alert. Chúng em cố ý khởi động response-worker muộn để thấy Alert trước — demo staged, không phải MTTA tự động thuần túy.",
-      "visual": "docs/video/scenes/04_datadog_alert.mp4"
+      "t0": 68.38804988662132,
+      "t1": 91.78804988662131,
+      "scene_dur": 23.619999999999997
     },
     {
       "id": "05_respond",
-      "t0": 87.00804988662132,
-      "t1": 102.58405895691611,
-      "display_text": "Worker đặt commanded_profile=safe. Simulator báo reported_profile=safe. Tách commanded và reported để không nhầm telemetry full thành bằng chứng safe.",
-      "visual": "docs/video/scenes/05_respond.mp4"
+      "t0": 92.00804988662131,
+      "t1": 109.8640589569161,
+      "scene_dur": 18.076009070294784
     },
     {
       "id": "06_verify",
-      "t0": 102.9340589569161,
-      "t1": 130.8940589569161,
-      "display_text": "Recovery cần chuỗi mẫu healthy liên tục. Monitor ALERT → OK. MongoDB RESOLVED / remediation VERIFIED. Nếu OK chậm, cửa sổ ~2 phút có thể trễ — bằng chứng cứng là MongoDB.",
-      "visual": "docs/video/scenes/06_verify.mp4"
+      "t0": 110.0840589569161,
+      "t1": 132.4040589569161,
+      "scene_dur": 22.54
     },
     {
       "id": "07_impact",
-      "t0": 131.2440589569161,
-      "t1": 171.9240589569161,
-      "display_text": "Synthetic: GPU 92,3→54,1°C; latency 177,3→59,6 ms; FPS 12,1→18,0 (safe mode ≠ 30 FPS). 40,9s = mẫu đầu → detect. 111s gồm trì hoãn worker có chủ đích.",
-      "visual": "docs/video/scenes/07_impact.mp4"
+      "t0": 132.6240589569161,
+      "t1": 161.52006802721087,
+      "scene_dur": 29.116009070294783
     },
     {
       "id": "08_close",
-      "t0": 172.2740589569161,
-      "t1": 187.61006802721087,
-      "display_text": "APM live xác nhận trên telemetry-api. EdgeGuard Ops chứng minh Detect → Investigate → Respond → Verify. Signal404. Cảm ơn ban giám khảo.",
-      "visual": "docs/video/scenes/08_close.mp4"
+      "t0": 161.74006802721087,
+      "t1": 178.82807256235827,
+      "scene_dur": 17.08800453514739
     }
   ],
-  "evidence_sources": [
-    "docs/evidence/performance-metrics.json",
-    "docs/evidence/live-datadog-validation.json",
-    "docs/presentation/assets/slide-previews/"
-  ],
-  "datadog_captures_embedded": [
-    "datadog-graph-fps-edge001.png",
-    "datadog-graph-fps.png",
-    "datadog-graph-gpu-edge001.png",
-    "datadog-graph-gpu.png",
-    "datadog-graph-latency-edge001.png",
-    "datadog-graph-latency.png"
-  ],
-  "datadog_captures_note": "Real Datadog PNG/JPG in docs/video/captures/ are embedded when present. Absent captures → labeled reconstructed status/metric scenes from verified evidence (not fake UI).",
+  "metrics_source": "docs/evidence/performance-metrics.json",
+  "metrics_used": {
+    "gpu_b": 92.3,
+    "gpu_a": 54.1,
+    "lat_b": 177.3,
+    "lat_a": 59.6,
+    "fps_b": 12.1,
+    "fps_a": 18.0,
+    "detect_s": 40.9,
+    "rem_s": 111.4,
+    "ver_s": 18.2,
+    "incident": "inc-thermal-edge-001-20261018085058",
+    "device": "edge-001"
+  },
   "disclosures": [
-    "All demo telemetry is synthetic and labeled on-screen.",
-    "Staged Alert: response-worker intentionally delayed; 111.4s is NOT autonomous MTTA.",
-    "FPS 12.1→18.0 is safe-mode recovery, not full 30 FPS restoration.",
-    "APM live verified for telemetry-api only."
+    "All demo telemetry is synthetic and labeled.",
+    "ALERT/OK cards are reconstructions from verified history — not live UI captures.",
+    "Datadog graphs are authentic API historical snapshots for the verified incident window.",
+    "monitor-status.json current state alone does not prove ALERT and OK.",
+    "Staged worker delay disclosed; remediation interval is not autonomous MTTA.",
+    "MongoDB before/after averages ≠ Datadog aggregated graph series (different aggregation)."
   ],
-  "baseline_commit_hint": "52bb9c8+",
-  "rebuild_note": "Subtitles reburned FontSize=16 after initial assembly",
-  "submission_local_path": "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\edgeguard-ops-final-demo.mp4"
+  "qa_patch": true,
+  "target_duration_range": [
+    175,
+    179
+  ],
+  "duration_ok": true
 }

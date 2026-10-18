@@ -1,39 +1,144 @@
 1
-00:00:00,000 --> 00:00:24,384
-Xin chào ban giám khảo. Em là thành viên đội Signal404 với dự án EdgeGuard Ops. Trên nhà máy, camera AI edge chạy liên tục. Khi GPU
-nóng và thermal throttling xảy ra, FPS giảm — thường phát hiện muộn. Câu hỏi: phát hiện sớm, xử lý an toàn, và chứng minh đã hồi phục?
+00:00:00,000 --> 00:00:03,324
+Xin chào ban giám khảo.
 
 2
-00:00:24,734 --> 00:00:47,870
-EdgeGuard Ops theo Detect → Investigate → Respond → Verify. MongoDB Time Series là nguồn sự
-thật; Datadog là mặt quan sát. Toàn bộ telemetry trong demo là synthetic, có nhãn rõ ràng.
+00:00:03,324 --> 00:00:07,950
+Signal404 — dự án EdgeGuard Ops.
 
 3
-00:00:48,220 --> 00:01:05,812
-Kịch bản thermal throttle trên simulator — dữ liệu giả lập.
-GPU tăng, latency tăng, FPS giảm. Health analyzer dùng $setWindowFields trên MongoDB.
+00:00:07,950 --> 00:00:12,141
+Camera AI edge chạy liên tục.
 
 4
-00:01:06,162 --> 00:01:26,658
-Dashboard EdgeGuard Fleet Operations. Monitor demo chuyển Alert. Chúng em cố ý khởi động response-worker
-muộn để thấy Alert trước — demo staged, không phải MTTA tự động thuần túy.
+00:00:12,141 --> 00:00:17,141
+GPU nóng → FPS giảm, phát hiện muộn.
 
 5
-00:01:27,008 --> 00:01:42,584
-Worker đặt commanded_profile=safe. Simulator báo reported_profile=safe. Tách commanded và
-reported để không nhầm telemetry full thành bằng chứng safe.
+00:00:17,141 --> 00:00:21,911
+Cần phát hiện sớm, xử lý an toàn,
 
 6
-00:01:42,934 --> 00:02:10,894
-Recovery cần chuỗi mẫu healthy liên tục. Monitor ALERT → OK. MongoDB RESOLVED / remediation VERIFIED.
-Nếu OK chậm, cửa sổ ~2 phút có thể trễ — bằng chứng cứng là MongoDB.
+00:00:21,911 --> 00:00:25,872
+và chứng minh đã hồi phục.
 
 7
-00:02:11,244 --> 00:02:51,924
-Synthetic: GPU 92,3→54,1°C; latency 177,3→59,6 ms; FPS 12,1→18,0 (safe mode ≠ 30 FPS).
-40,9s = mẫu đầu → detect. 111s gồm trì hoãn worker có chủ đích.
+00:00:26,092 --> 00:00:31,092
+Detect → Investigate → Respond → Verify.
 
 8
-00:02:52,274 --> 00:03:07,610
-APM live xác nhận trên telemetry-api. EdgeGuard Ops chứng minh Detect
-→ Investigate → Respond → Verify. Signal404. Cảm ơn ban giám khảo.
+00:00:31,092 --> 00:00:36,092
+MongoDB Time Series = nguồn sự thật.
+
+9
+00:00:36,092 --> 00:00:41,038
+Datadog = mặt quan sát vận hành.
+
+10
+00:00:41,038 --> 00:00:48,196
+Telemetry demo: synthetic, có nhãn.
+
+11
+00:00:48,416 --> 00:00:53,416
+Thermal throttle — dữ liệu giả lập.
+
+12
+00:00:53,416 --> 00:00:58,164
+GPU ↑ · latency ↑ · FPS ↓
+
+13
+00:00:58,164 --> 00:01:08,168
+MongoDB $setWindowFields phát hiện xu
+hướng.
+
+14
+00:01:08,388 --> 00:01:13,129
+Dashboard: GPU · latency · FPS.
+
+15
+00:01:13,129 --> 00:01:18,129
+Thẻ ALERT = tái dựng (đã xác nhận),
+
+16
+00:01:18,129 --> 00:01:21,647
+không phải ảnh UI live.
+
+17
+00:01:21,647 --> 00:01:26,235
+Staged: worker khởi động muộn.
+
+18
+00:01:26,235 --> 00:01:31,788
+Không phải MTTA tự động thuần túy.
+
+19
+00:01:32,008 --> 00:01:36,251
+commanded_profile = safe
+
+20
+00:01:36,251 --> 00:01:40,317
+reported_profile = safe
+
+21
+00:01:40,317 --> 00:01:44,030
+Commanded ≠ reported.
+
+22
+00:01:44,030 --> 00:01:49,864
+Telemetry full ≠ bằng chứng safe.
+
+23
+00:01:50,084 --> 00:01:54,903
+Recovery = chuỗi mẫu healthy liên tục.
+
+24
+00:01:54,903 --> 00:01:59,215
+Lịch sử: ALERT → OK (đã xác nhận).
+
+25
+00:01:59,215 --> 00:02:04,215
+MongoDB RESOLVED · remediation VERIFIED.
+
+26
+00:02:04,215 --> 00:02:09,161
+monitor-status.json hiện tại = OK only.
+
+27
+00:02:09,161 --> 00:02:12,404
+Bằng chứng cứng: MongoDB.
+
+28
+00:02:12,624 --> 00:02:17,624
+Synthetic — cửa sổ MongoDB đo được:
+
+29
+00:02:17,624 --> 00:02:20,457
+GPU 92.3→54.1°C
+
+30
+00:02:20,457 --> 00:02:24,423
+Latency 177.3→59.6 ms
+
+31
+00:02:24,423 --> 00:02:29,145
+FPS 12.1→18.0 (safe ≠ 30)
+
+32
+00:02:29,145 --> 00:02:33,489
+40.9s: mẫu đầu → detect
+
+33
+00:02:33,489 --> 00:02:41,520
+111.4s: gồm trì hoãn worker staged
+
+34
+00:02:41,740 --> 00:02:46,740
+APM live: telemetry-api (đã xác nhận).
+
+35
+00:02:46,740 --> 00:02:51,740
+Detect → Investigate → Respond → Verify.
+
+36
+00:02:51,740 --> 00:02:58,828
+Signal404 · Cảm ơn ban giám khảo.
