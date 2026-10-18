@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEdgeGuardConfiguration(builder.Configuration);
 builder.Services.AddEdgeGuardObservability(builder.Configuration);
 builder.Services.AddEdgeGuardMongo();
-builder.Logging.AddEdgeGuardJsonConsole();
+builder.Logging.AddEdgeGuardLogging(builder.Configuration);
 
 var app = builder.Build();
 

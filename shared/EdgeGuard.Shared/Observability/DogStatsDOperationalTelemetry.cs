@@ -7,10 +7,12 @@ namespace EdgeGuard.Shared.Observability;
 public sealed class DogStatsDOperationalTelemetry : IOperationalTelemetry, IDisposable
 {
     private readonly DogStatsdService _statsd;
+    private readonly string _environmentName;
     private readonly bool _owned;
 
-    public DogStatsDOperationalTelemetry(string agentHost, int dogStatsDPort)
+    public DogStatsDOperationalTelemetry(string agentHost, int dogStatsDPort, string environmentName = "development")
     {
+        _environmentName = string.IsNullOrWhiteSpace(environmentName) ? "development" : environmentName;
         _statsd = new DogStatsdService();
         _statsd.Configure(new StatsdConfig
         {
@@ -25,6 +27,7 @@ public sealed class DogStatsDOperationalTelemetry : IOperationalTelemetry, IDisp
     {
         var tags = new[]
         {
+            $"env:{_environmentName}",
             $"{MetricTags.DeviceId}:{reading.Metadata.DeviceId}",
             $"{MetricTags.Site}:{reading.Metadata.Site}",
             $"{MetricTags.Line}:{reading.Metadata.Line}",
@@ -46,14 +49,18 @@ public sealed class DogStatsDOperationalTelemetry : IOperationalTelemetry, IDisp
 
     public void RecordActiveIncidents(int count)
     {
-        _statsd.Gauge(MetricNames.IncidentActive, count);
+        _statsd.Gauge(MetricNames.IncidentActive, count, tags: [$"env:{_environmentName}"]);
     }
 
     public void RecordRemediation(RemediationActionType actionType)
     {
         _statsd.Increment(
             MetricNames.RemediationCount,
-            tags: [$"action_type:{DomainMappings.FormatRemediationAction(actionType)}"]);
+            tags:
+            [
+                $"env:{_environmentName}",
+                $"action_type:{DomainMappings.FormatRemediationAction(actionType)}"
+            ]);
     }
 
     public void Dispose()

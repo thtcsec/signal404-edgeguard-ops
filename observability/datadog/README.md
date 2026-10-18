@@ -1,18 +1,16 @@
 # Datadog plans + applyable definitions
 
-Repo-reproducible definitions (implemented). **Live apply not yet verified** — requires `DD_API_KEY` + `DD_APP_KEY` in local env; never commit keys.
+Repo-reproducible definitions. **Live apply** requires `DD_API_KEY` + `DD_APP_KEY` in local `.env` (loaded by `scripts/datadog-apply.ps1`). Never commit keys.
 
-- `dashboard-fleet-operations.json` — EdgeGuard Fleet Operations dashboard
-- `monitor-thermal-gpu.json` — GPU thermal ALERT → OK monitor
-- Apply with `..\..\scripts\datadog-apply.ps1`
+| File | Purpose |
+| --- | --- |
+| `dashboard-fleet-operations.json` | EdgeGuard Fleet Operations |
+| `monitor-thermal-gpu.json` | Production-reasonable thermal monitor (`last_5m`, `new_group_delay` 60) |
+| `monitor-thermal-gpu.demo.json` | Demo monitor (`last_2m`, `new_group_delay` 0) for ALERT before recovery |
 
-## Dashboard sections (definition intent)
+```powershell
+..\..\scripts\datadog-apply.ps1
+..\..\scripts\datadog-apply.ps1 -Demo
+```
 
-1. **Fleet Overview** — active incidents and remediation signals
-2. **Device Health** — GPU temperature and related device gauges
-3. **AI Inference Performance** — FPS, inference latency
-4. **Network Health** — packet loss
-5. **Active Incidents** — `edgeguard.incident.active`
-6. **Remediation / Recovery** — `edgeguard.remediation.count` on the same timeline
-
-After a trial account exists, apply these files and confirm widgets/monitor state in the Datadog UI.
+Application is idempotent (update by dashboard title / monitor name). No webhook notification handles are included.

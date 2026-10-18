@@ -1,0 +1,26 @@
+{
+  "name": "EdgeGuard - GPU thermal throttling (demo)",
+  "type": "metric alert",
+  "query": "avg(last_2m):avg:edgeguard.device.gpu_temperature{env:development} by {device_id} > 85",
+  "message": "DEMO monitor — shorter evaluation window so ALERT can fire before safe-profile recovery.\n\nProduction definition: `monitor-thermal-gpu.json` (avg last_5m, new_group_delay 60).\n\nDevice {{device_id.name}}: confirm remediation sets commanded_profile=safe and this monitor returns to OK.",
+  "tags": [
+    "service:edgeguard-ops",
+    "team:signal404",
+    "incident_type:thermal_throttling",
+    "profile:demo"
+  ],
+  "options": {
+    "thresholds": {
+      "critical": 85,
+      "critical_recovery": 75
+    },
+    "notify_no_data": false,
+    "require_full_window": false,
+    "notify_audit": false,
+    "include_tags": true,
+    "new_group_delay": 0,
+    "escalation_message": "",
+    "timeout_h": 0
+  },
+  "priority": 2
+}

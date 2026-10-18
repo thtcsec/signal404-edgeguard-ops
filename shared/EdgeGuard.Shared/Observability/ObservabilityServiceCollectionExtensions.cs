@@ -26,17 +26,18 @@ public static class ObservabilityServiceCollectionExtensions
                 return new NoOpOperationalTelemetry();
             }
 
-            return new DogStatsDOperationalTelemetry(settings.AgentHost, settings.DogStatsDPort);
+            return new DogStatsDOperationalTelemetry(
+                settings.AgentHost,
+                settings.DogStatsDPort,
+                settings.EnvironmentName);
         });
-
-        // Load Datadog.Trace so the automatic tracer can discover EdgeGuard.Ops ActivitySource
-        // when DD_TRACE_OTEL_ENABLED=true / agent APM is available. Safe no-op if agent absent.
-        _ = typeof(Datadog.Trace.Tracer);
 
         return services;
     }
 
-    public static ILoggingBuilder AddEdgeGuardJsonConsole(this ILoggingBuilder logging)
+    public static ILoggingBuilder AddEdgeGuardLogging(
+        this ILoggingBuilder logging,
+        IConfiguration configuration)
     {
         logging.ClearProviders();
         logging.AddJsonConsole(options =>
@@ -48,6 +49,25 @@ public static class ObservabilityServiceCollectionExtensions
                 Indented = false
             };
         });
+
+        var settings = configuration.GetSection(ObservabilitySettings.SectionName).Get<ObservabilitySettings>()
+            ?? new ObservabilitySettings();
+
+        if (settings.DatadogEnabled && !string.IsNullOrWhiteSpace(settings.LogDirectory))
+        {
+            var directory = Path.GetFullPath(settings.LogDirectory);
+            Directory.CreateDirectory(directory);
+            var filePath = Path.Combine(directory, $"{SanitizeFileName(settings.ServiceName)}.log");
+            logging.AddProvider(new JsonFileLoggerProvider(filePath));
+        }
+
         return logging;
+    }
+
+    private static string SanitizeFileName(string serviceName)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var chars = serviceName.Select(ch => invalid.Contains(ch) ? '_' : ch).ToArray();
+        return new string(chars);
     }
 }

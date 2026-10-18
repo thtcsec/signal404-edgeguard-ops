@@ -1,4 +1,12 @@
-# Custom log/source hints for EdgeGuard Ops host processes (optional).
-# Primary metrics arrive via DogStatsD; APM via the trace agent.
+# File-tail host .NET service logs (demo runs on Windows host, agent in Compose).
+# Host path ./.logs is mounted read-only at /var/log/edgeguard in docker-compose.yml.
 
-logs: []
+logs:
+  - type: file
+    path: /var/log/edgeguard/*.log
+    service: edgeguard-ops
+    source: csharp
+    sourcecategory: sourcecode
+    tags:
+      - team:signal404
+      - product:edgeguard

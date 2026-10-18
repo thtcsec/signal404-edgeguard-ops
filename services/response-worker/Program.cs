@@ -11,7 +11,7 @@ builder.Services.AddEdgeGuardObservability(builder.Configuration);
 builder.Services.AddEdgeGuardMongo();
 builder.Services.AddSingleton<IRemediationExecutor, SafeProfileRemediationExecutor>();
 builder.Services.AddHostedService<RemediationWorker>();
-builder.Logging.AddEdgeGuardJsonConsole();
+builder.Logging.AddEdgeGuardLogging(builder.Configuration);
 
 var host = builder.Build();
 

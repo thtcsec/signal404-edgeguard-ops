@@ -21,6 +21,9 @@ secrets/
 *.key
 *.pem
 
+# Host JSON logs tailed by Datadog Agent (Compose mount ./.logs)
+.logs/
+
 # OS and editors
 .DS_Store
 Thumbs.db

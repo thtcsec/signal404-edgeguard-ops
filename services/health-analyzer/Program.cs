@@ -11,7 +11,7 @@ builder.Services.AddEdgeGuardObservability(builder.Configuration);
 builder.Services.AddEdgeGuardMongo();
 builder.Services.AddSingleton<IFleetHealthAnalyzer, FleetThermalHealthAnalyzer>();
 builder.Services.AddHostedService<HealthAnalyzerWorker>();
-builder.Logging.AddEdgeGuardJsonConsole();
+builder.Logging.AddEdgeGuardLogging(builder.Configuration);
 
 var host = builder.Build();
 

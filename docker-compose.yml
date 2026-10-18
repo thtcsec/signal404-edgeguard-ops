@@ -19,9 +19,8 @@ services:
   datadog-agent:
     profiles: ["datadog"]
     image: gcr.io/datadoghq/agent:7
-    env_file:
-      - path: .env
-        required: false
+    # Do NOT use env_file: .env — that would inject DD_APP_KEY into the Agent.
+    # Compose still interpolates ${DD_API_KEY} from the host .env for substitution only.
     environment:
       DD_API_KEY: ${DD_API_KEY:-}
       DD_SITE: ${DD_SITE:-datadoghq.com}
@@ -40,6 +39,8 @@ services:
     volumes:
       - ./infrastructure/datadog/datadog.yaml:/etc/datadog-agent/datadog.yaml:ro
       - ./infrastructure/datadog/conf.d:/etc/datadog-agent/conf.d:ro
+      # Host .NET JSON logs (Observability__LogDirectory=.logs) → Agent file-tail
+      - ./.logs:/var/log/edgeguard:ro
     restart: unless-stopped
 
   telemetry-api:

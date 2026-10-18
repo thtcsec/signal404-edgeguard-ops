@@ -20,4 +20,10 @@ public sealed class ObservabilitySettings
     public string EnvironmentName { get; set; } = "development";
 
     public string Version { get; set; } = "0.1.0";
+
+    /// <summary>
+    /// When Datadog is enabled, JSON logs are also written under this directory for Agent file-tail.
+    /// Default is repo-relative <c>.logs</c> (mounted into the Compose agent).
+    /// </summary>
+    public string LogDirectory { get; set; } = ".logs";
 }

@@ -1,0 +1,36 @@
+{
+  "timestamp_utc": "2026-10-18T09:02:00Z",
+  "dashboard_url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st",
+  "monitor_url": "https://app.datadoghq.com/monitors/333934695",
+  "monitor_id": 333934695,
+  "observed": {
+    "metrics_gpu_fps_latency": true,
+    "dashboard_applied": true,
+    "monitor_alert_then_ok": true,
+    "structured_logs_in_datadog": true,
+    "apm_service_edgeguard_telemetry_api": true,
+    "e2e_incident_resolved": true,
+    "agent_without_dd_app_key": true
+  },
+  "e2e": {
+    "incident_id": "inc-thermal-edge-001-20261018085058",
+    "remediation_id": "act-safe-edge-001-20261018085250",
+    "final_status": "RESOLVED",
+    "remediation_state": "VERIFIED",
+    "monitor_before_remediation": "No Data",
+    "monitor_alert_seen": true,
+    "monitor_ok_seen": true
+  },
+  "fixes_required_for_live_success": [
+    "JsonFileLoggerProvider: avoid serializing FormattedLogValues Metadata (was HTTP 500 on ingest)",
+    "docker-compose datadog-agent: remove env_file .env so DD_APP_KEY is not injected",
+    "datadog.yaml: do not expand ${DD_SITE} (caused api.datadoghq.com. DNS failures)",
+    "enable-datadog-dotnet-apm.ps1: clear DD_APM_RECEIVER_SOCKET and force TCP http://127.0.0.1:8126 (wizard UDS broke Windows host tracing)",
+    "Datadog.Trace.Bundle 3.55.1; NU1903 suppression removed"
+  ],
+  "notes": [
+    "Demo monitor (last_2m, new_group_delay 0) used for ALERT before recovery.",
+    "APM services API returned edgeguard-telemetry-api after TCP fix; analyzer/worker use same enable script.",
+    "Secrets were never written into this evidence file."
+  ]
+}

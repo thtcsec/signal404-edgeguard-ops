@@ -2,11 +2,12 @@
   "name": "EdgeGuard - GPU thermal throttling",
   "type": "metric alert",
   "query": "avg(last_5m):avg:edgeguard.device.gpu_temperature{*} by {device_id} > 85",
-  "message": "EdgeGuard detected elevated GPU temperature on {{device_id.name}}.\n\nInvestigate inference latency / FPS on the EdgeGuard Fleet Operations dashboard, then confirm remediation switches commanded_profile to safe and recovery returns this monitor to OK.\n\nCorrelate with logs: `device_id:{{device_id.name}}` and APM services `edgeguard-health-analyzer` / `edgeguard-response-worker`.\n\n@webhook-edgeguard-ops",
+  "message": "EdgeGuard detected elevated GPU temperature on {{device_id.name}}.\n\nInvestigate inference latency / FPS on the EdgeGuard Fleet Operations dashboard, then confirm remediation switches commanded_profile to safe and recovery returns this monitor to OK.\n\nCorrelate with logs: `device_id:{{device_id.name}}` and APM services `edgeguard-health-analyzer` / `edgeguard-response-worker`.",
   "tags": [
     "service:edgeguard-ops",
     "team:signal404",
-    "incident_type:thermal_throttling"
+    "incident_type:thermal_throttling",
+    "profile:production"
   ],
   "options": {
     "thresholds": {

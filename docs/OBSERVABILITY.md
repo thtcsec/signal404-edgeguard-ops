@@ -2,72 +2,62 @@
 
 ## Implementation vs live verification
 
-- **Implemented in this repo:** DogStatsD `IOperationalTelemetry`, optional Datadog Agent Compose profile, structured JSON logs with `device_id` / `incident_id` / `action_id`, `ActivitySource` spans, reproducible dashboard/monitor JSON, and `scripts/datadog-apply.ps1`.
-- **Verified locally:** full Detect → Investigate → Respond → Verify path with `Observability:DatadogEnabled=false` (including mid-recovery telemetry stall).
-- **Not yet verified live:** metrics appearing in a Datadog org, dashboard/monitor apply, monitor ALERT → OK in the UI, and APM span capture. Those require `DD_API_KEY` / `DD_APP_KEY` and a separate validation pass — do not claim them until completed.
+- **Implemented:** DogStatsD `IOperationalTelemetry`, optional Datadog Agent Compose profile, JSON console + **file** logs under `Observability:LogDirectory` (Agent file-tail), `Datadog.Trace.Bundle` automatic instrumentation (CORECLR profiler via `scripts/enable-datadog-dotnet-apm.ps1` or Dockerfiles), reproducible dashboard/monitor JSON, idempotent `scripts/datadog-apply.ps1` (loads `.env`).
+- **Verified locally:** Detect → Investigate → Respond → Verify with Datadog disabled (including mid-recovery telemetry stall).
+- **Verified live (2026-10-18):** DogStatsD metrics, host file-tail logs, demo monitor ALERT→OK, dashboard apply, APM service `edgeguard-telemetry-api` after forcing TCP (`DD_TRACE_AGENT_URL=http://127.0.0.1:8126`). See [evidence/live-datadog-validation.json](evidence/live-datadog-validation.json).
 
 ## Runtime modes
 
 | Mode | Behavior |
 | --- | --- |
-| `Observability:DatadogEnabled=false` (default) | `NoOpOperationalTelemetry`, stack runs without agent |
-| `Observability:DatadogEnabled=true` | DogStatsD metrics to agent; JSON console logs; ActivitySource spans when `DD_TRACE_ENABLED=true` |
+| `Observability:DatadogEnabled=false` (default) | `NoOpOperationalTelemetry`; no file-tail logs; stack runs without agent |
+| `Observability:DatadogEnabled=true` | DogStatsD to agent; JSON console + `.logs/{service}.log`; APM when profiler env is set |
 
 Cross-process polling (API / analyzer / response-worker) is correlated by `device_id`, `incident_id`, and `action_id` in logs and span tags. This repository does **not** claim a single distributed trace across those processes unless W3C/Datadog trace-context propagation is added later.
 
 ## Metrics
 
-Emitted by `DogStatsDOperationalTelemetry` on ingest / analysis / remediation:
+Emitted by `DogStatsDOperationalTelemetry` (tags include `env:`):
 
 - `edgeguard.device.gpu_temperature`
 - `edgeguard.device.inference_latency`
 - `edgeguard.device.fps`
 - `edgeguard.device.packet_loss`
 - `edgeguard.device.*` (cpu/memory/network/dropped frames)
-- `edgeguard.incident.active` (gauge of currently active incidents)
-- `edgeguard.remediation.count` (increment)
+- `edgeguard.incident.active`
+- `edgeguard.remediation.count`
 
-Tags: `device_id`, `site`, `line`, `profile` (reported), `device_type`, `action_type`.
+## Logs (host → Agent)
 
-## Traces
+Demo runs .NET on the Windows host. Container log collection stays off. Instead:
 
-`ActivitySource` name: `EdgeGuard.Ops`
+1. Services write JSON lines to `Observability:LogDirectory` (use an **absolute** path to repo `.logs` for Compose).
+2. Compose mounts `./.logs` → `/var/log/edgeguard`.
+3. `infrastructure/datadog/conf.d/edgeguard.d/conf.yaml` file-tails `*.log`.
 
-Span names:
+## Traces (.NET automatic instrumentation)
 
-- `POST /telemetry`
-- `TelemetryRepository.insert`
-- `HealthAnalyzer.analyze`
-- `IncidentRepository.insert`
-- `RemediationExecutor.execute`
-- `Remediation.incident`
+Package: `Datadog.Trace.Bundle` (≥ 3.55.1; patched for CVE-2026-50273 / former NU1903 on &lt; 3.43.0).
 
-Enable agent capture of custom activities with `DD_TRACE_OTEL_ENABLED=true` and `DD_TRACE_ENABLED=true`.
+`ActivitySource` name: `EdgeGuard.Ops` with spans such as `POST /telemetry`, `HealthAnalyzer.analyze`, `RemediationExecutor.execute`.
 
-## Logs
+**Required:** load the native profiler before process start (`scripts/enable-datadog-dotnet-apm.ps1` on Windows host, or Dockerfile `CORECLR_*` for Compose `apps` profile). A NuGet reference alone does not emit APM spans. Also set `DD_TRACE_ENABLED=true` and `DD_TRACE_OTEL_ENABLED=true` so custom activities are captured.
 
-Services use JSON console logging. Search keys in message templates:
+## Dashboard + monitors
 
-- `device_id=`
-- `incident_id=`
-- `action_id=`
-- `commanded_profile=` / `reported_profile=`
-
-## Dashboard + monitor (repo as source of truth)
-
-Definitions live in the repository (reproducible; not UI-only). They are **not applied** until you run the apply script against a Datadog org:
-
-- [dashboard-fleet-operations.json](../observability/datadog/dashboard-fleet-operations.json)
-- [monitor-thermal-gpu.json](../observability/datadog/monitor-thermal-gpu.json)
+| File | Role |
+| --- | --- |
+| `dashboard-fleet-operations.json` | Fleet Operations dashboard |
+| `monitor-thermal-gpu.json` | **Production-reasonable:** `avg(last_5m)`, `new_group_delay: 60` |
+| `monitor-thermal-gpu.demo.json` | **Demo:** `avg(last_2m)`, `new_group_delay: 0` so ALERT can precede recovery |
 
 ```powershell
-$env:DD_API_KEY = "..."   # from local .env — never commit
-$env:DD_APP_KEY = "..."
-.\scripts\datadog-apply.ps1
+.\scripts\datadog-apply.ps1          # production monitor
+.\scripts\datadog-apply.ps1 -Demo    # demo monitor
 ```
 
-Thermal monitor **expected** lifecycle after live apply: **ALERT** when GPU avg exceeds 85°C, **OK** after safe-profile recovery brings temperature under the recovery threshold (75°C). Confirm this in the Datadog UI during live validation.
+Script loads repo-root `.env` for `DD_API_KEY` / `DD_APP_KEY`, and create-or-updates by title/name (idempotent). No webhook notifications are configured.
 
 ## Demo with Datadog
 
-See [DEMO.md](DEMO.md) sections A (verified) and B (pending live credentials).
+See [DEMO.md](DEMO.md) sections A (verified) and B (live credentials).

@@ -3,13 +3,14 @@
 ## Safe defaults
 
 - Agent is behind Compose profile `datadog` — `.\scripts\dev-up.ps1` does **not** start it.
-- `DD_API_KEY` must come from `.env` (see `.env.example`). Never commit secrets.
+- `DD_API_KEY` must come from local `.env` (see `.env.example`). Never commit secrets.
 - Application services keep `Observability__DatadogEnabled=false` unless you opt in.
 
 ## Start agent
 
 ```powershell
-Copy-Item .env.example .env   # then set DD_API_KEY
+Copy-Item .env.example .env   # then set DD_API_KEY (and DD_APP_KEY for apply)
+New-Item -ItemType Directory -Force -Path .logs | Out-Null
 docker compose --profile datadog up -d datadog-agent
 ```
 
@@ -17,21 +18,19 @@ Host processes should point at:
 
 - DogStatsD: `127.0.0.1:8125`
 - Trace agent: `127.0.0.1:8126`
+- Logs: absolute `Observability__LogDirectory` → repo `.logs` (mounted at `/var/log/edgeguard`)
+
+APM on Windows host:
 
 ```powershell
-$env:Observability__DatadogEnabled = "true"
-$env:Observability__AgentHost = "127.0.0.1"
-$env:DD_TRACE_ENABLED = "true"
-$env:DD_TRACE_OTEL_ENABLED = "true"
-$env:DD_AGENT_HOST = "127.0.0.1"
-$env:DD_SERVICE = "edgeguard-telemetry-api"
-$env:DD_ENV = "development"
+. .\scripts\enable-datadog-dotnet-apm.ps1 -AppDirectory .\services\telemetry-api\bin\Release\net9.0
 ```
 
 ## Apply dashboard + monitor from repo
 
 ```powershell
-.\scripts\datadog-apply.ps1
+.\scripts\datadog-apply.ps1           # loads .env; idempotent
+.\scripts\datadog-apply.ps1 -Demo     # shorter window for hackathon ALERT→OK
 ```
 
-Requires `DD_API_KEY` and optional `DD_SITE` (default `datadoghq.com`).
+Requires `DD_API_KEY` and `DD_APP_KEY` in `.env` or parameters. `DD_SITE` defaults to `datadoghq.com`.
