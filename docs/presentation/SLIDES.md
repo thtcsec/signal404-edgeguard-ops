@@ -1,78 +1,53 @@
 # EdgeGuard Ops — 8 judge slides (source content)
 
 Editable PPTX: [EdgeGuard-Ops-Judge-Deck.pptx](EdgeGuard-Ops-Judge-Deck.pptx)  
-Style: dark industrial (#0B1220 background, #E8EEF7 text, #3DDC97 accent, #FF6B4A alert).
+Generator: `scripts/generate-judge-deck.py`  
+Style: dark (#0B1220), text #E8EEF7, accent #3DDC97, alert #FF6B4A.  
+All telemetry on slides is **synthetic** and labeled.
 
 ---
 
-## Slide 1 — EdgeGuard Ops
+## Slide 1 — Title
 
-**Title:** EdgeGuard Ops  
-**Subtitle:** Signal404 · MUGVN Hackathon 2026  
-**Line:** Detect → Investigate → Respond → Verify for edge AI camera fleets  
-**Footer:** MongoDB time-series + Datadog operator plane
+**EdgeGuard Ops** · Closed-loop observability for edge AI camera fleets  
+Visual: Detect → Investigate → Respond → Verify nodes  
+Footer: Signal404 · MongoDB + Datadog · Synthetic demo data labeled throughout
 
 ## Slide 2 — The Problem
 
-- Edge GPUs thermally throttle → FPS collapse, frames drop  
-- Symptoms look like “slow inference” or “bad network”  
-- Operators need proof of cause **and** proof of recovery  
-- **Without a closed loop, telemetry is just noise**
+Three cards: Thermal throttle · Misread symptoms · No closed loop  
+Need: early detection → safe action → proof the fleet is healthy again
 
 ## Slide 3 — Our Solution
 
-Four beats only:
-
-1. **Detect** — `$setWindowFields` thermal trends  
-2. **Investigate** — evidence + calm network contrast  
-3. **Respond** — commanded `safe` profile  
-4. **Verify** — continuous healthy reported-safe samples  
+Four cards: Detect / Investigate / Respond / Verify  
+Pill: **SYNTHETIC TELEMETRY LAB RUN**  
+Note: safe mode ≠ full 30 FPS restore
 
 ## Slide 4 — System Architecture
 
-```
-Simulator → Telemetry API → MongoDB TS
-                 ↓               ↓
-            Datadog Agent   Health Analyzer (poll)
-                                 ↓
-                            Incidents → Response Worker (poll)
-                                 ↓
-                         safe profile → RESOLVED
-```
-
-Polling is intentional. No Kafka / K8s / custom UI.
+**Visual diagram** (not ASCII): Simulator → Telemetry API → MongoDB TS → Health Analyzer → Response Worker; Datadog as operator lens  
+Design choices card: polling, commanded ≠ reported, no Kafka/K8s/custom UI, DogStatsD + file-tail
 
 ## Slide 5 — Intelligent Incident Detection
 
-- Short vs trailing windows: GPU °C, latency, FPS  
-- Packet loss / network latency checked to avoid false “network” blame  
-- Incident stores evidence snapshot + root-cause text  
-- **MongoDB is the analytical source of truth**
+Windows → Contrast → Open  
+**40.9s** = first stored sample → `detectedAt` (not time since anomaly onset)
 
 ## Slide 6 — Automated Remediation
 
-- Poll active incidents → atomic `$set` commanded profile  
-- Commanded ≠ reported (telemetry `full` ≠ proof of `safe`)  
-- Observation window: continuous healthy samples; stall resets  
-- Remediation `VERIFIED` only after evidence
+Commanded vs reported · Verify recovery  
+SAFE MODE = thermal headroom trade-off · post-recovery FPS ≈ 18, not 30
 
 ## Slide 7 — Live Validation & Impact
 
-**Observed (synthetic run 2026-10-18):**
+Metric bars from evidence: GPU **92.3→54.1°C**, latency **177.3→59.6 ms**, FPS **12.1→18.0**  
+Timeline (staged Alert): 40.9s detect · **111.4s includes intentional worker delay (NOT autonomous MTTA)** · 18.2s VERIFIED  
+APM live: telemetry-api only · Incident …85058  
+Optional real Datadog PNGs if present under `assets/` (none fabricated)
 
-| Signal | Before | After safe |
-| --- | --- | --- |
-| GPU °C | ~92 | ~54 |
-| Latency ms | ~177 | ~60 |
-| FPS | ~12 | ~18 |
+## Slide 8 — Why EdgeGuard Ops
 
-- Datadog demo monitor: **ALERT → OK**  
-- Dashboard / monitor live URLs in evidence JSON  
-- Staged worker delay for Alert visibility — disclosed  
-
-## Slide 8 — Differentiation & Future
-
-**Why us:** closed-loop edge ops with honest commanded/reported + recovery evidence  
-**Future:** change streams, multi-site fleets, verify APM for all three services in UI  
-**Limitations:** synthetic data; poll latency floor  
-**Ask:** Detect → Investigate → Respond → Verify — observable and recoverable
+Creative / Technical / Impact / Honest pillars  
+Official finals scoring: Creativity 30% · Technical 30% · Impact 30% · Presentation 10%  
+Repo private through 22 Nov 2026 · Submit by 31 Oct 2026 23:59 ICT

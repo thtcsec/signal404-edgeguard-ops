@@ -25,8 +25,8 @@
 
 | Interval | Seconds | Notes |
 | --- | --- | --- |
-| Detection latency (first sample → detect) | **40.9** | Polling analyzer + windows |
-| Detection → remediation request | **111.4** | **STAGED** — response-worker delayed for Datadog ALERT |
+| Detection latency (first sample → detect) | **40.9** | From **first stored sample** → `detectedAt` — not time since anomaly onset |
+| Detection → remediation request | **111.4** | **STAGED** — response-worker delayed for Datadog ALERT; **not** autonomous MTTA |
 | Remediation → verified | **18.2** | Continuous recovery evidence (~15s observation) |
 | Detection → resolved | **129.7** | Staged end-to-end |
 
@@ -38,10 +38,13 @@
 | Inference latency ms | 177.3 | 59.6 |
 | FPS | 12.1 | 18.0 |
 
+FPS after resolve is a **safe-mode operating point** (~18), not a claim of full ~30 FPS restoration.
+
 Incident document evidence at open: GPU 85.1°C, latency 136.0 ms, FPS 17.4 (1m analyzer window averages).
 
 ## NOT VERIFIED
 
 - Autonomous detect→remediate latency with worker already running (would be shorter; not re-measured in the staged Alert run).
-- APM span counts for analyzer/response-worker in Datadog.
+- APM span counts for analyzer/response-worker in Datadog (only **telemetry-api** verified live).
 - Multi-device concurrent incident metrics.
+- Full peak-FPS restoration after remediation.

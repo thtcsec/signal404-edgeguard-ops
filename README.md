@@ -48,7 +48,8 @@ MUGVN Hackathon 2026, Real-time Operations, with MongoDB and Datadog. Official b
 | [docs/FINAL_CHECKLIST.md](docs/FINAL_CHECKLIST.md) | Readiness checklist |
 | [docs/DEMO_STORYBOARD.md](docs/DEMO_STORYBOARD.md) | 3-minute storyboard |
 | [docs/DEMO_SCRIPT_VI.md](docs/DEMO_SCRIPT_VI.md) | Vietnamese narration |
-| [docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx](docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx) | 8-slide judge deck |
+| [docs/RECORDING_SEQUENCE.md](docs/RECORDING_SEQUENCE.md) | Demo recording sequence + automatic E2E plan |
+| [docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx](docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx) | 8-slide judge deck (visual) |
 | [docs/evidence/](docs/evidence/) | Live Datadog + performance JSON |
 
 Pre-existing baseline disclosure: [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md). AI/reuse: [docs/AI_AND_REUSE_DISCLOSURE.md](docs/AI_AND_REUSE_DISCLOSURE.md).
@@ -76,7 +77,7 @@ No Kubernetes, Kafka, custom frontend, or AI agent.
 | DogStatsD + Agent Compose + dashboard/monitor JSON | Implemented |
 | Host JSON log file-tail into Agent | Implemented |
 | .NET APM via Trace.Bundle + profiler env | Implemented (verify spans in live org) |
-| Live Datadog UI (metrics / logs / APM / ALERT→OK) | Pending credentials |
+| Live Datadog UI (metrics / logs / APM API / ALERT→OK) | Observed 2026-10-18 (APM: telemetry-api only) |
 
 ## MongoDB usage
 

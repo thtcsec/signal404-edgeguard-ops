@@ -89,14 +89,16 @@ Evidence: [evidence/live-datadog-validation.json](evidence/live-datadog-validati
 ### Limitations (do not over-claim)
 
 - Telemetry is **synthetic**
-- Live ALERT demo used **delayed response-worker start** so the monitor could Alert first — not pure autonomous MTTA
+- **40.9 s** detection clock = first stored sample → detect (not anomaly-onset)
+- Live ALERT demo used **delayed response-worker start** (**111.4 s** detect→remediate includes that delay) — not pure autonomous MTTA
+- Post-recovery FPS ≈ **18** is safe-mode trade-off — **not** full ~30 FPS restoration
 - APM cloud verification for **health-analyzer** and **response-worker**: **NOT VERIFIED** (same Bundle wiring; only API service confirmed in Datadog services API)
 - No single distributed trace across poll processes (correlation by IDs)
 - Transitive NuGet advisories on MongoDB stack (`SharpCompress`, `Snappier`) — classified in checklist
 
 ## Demo instructions
 
-See [DEMO.md](DEMO.md), [DEMO_STORYBOARD.md](DEMO_STORYBOARD.md), [DEMO_REHEARSAL.md](DEMO_REHEARSAL.md), [VIDEO_CAPTURE_CHECKLIST.md](VIDEO_CAPTURE_CHECKLIST.md).
+See [DEMO.md](DEMO.md), [RECORDING_SEQUENCE.md](RECORDING_SEQUENCE.md), [DEMO_STORYBOARD.md](DEMO_STORYBOARD.md), [DEMO_REHEARSAL.md](DEMO_REHEARSAL.md), [VIDEO_CAPTURE_CHECKLIST.md](VIDEO_CAPTURE_CHECKLIST.md), [presentation/EdgeGuard-Ops-Judge-Deck.pptx](presentation/EdgeGuard-Ops-Judge-Deck.pptx).
 
 ## Disclosure
 
@@ -105,4 +107,14 @@ AI / reuse: [AI_AND_REUSE_DISCLOSURE.md](AI_AND_REUSE_DISCLOSURE.md)
 
 ## Official brief (from public organizer materials)
 
-Build a useful MongoDB-powered app; use Datadog to observe, detect, investigate, and resolve an operational challenge end-to-end (incident → recovery). MongoDB expectations include time-series, aggregations/window functions, TTL. Datadog expectations include dashboard + monitor/alert plus at least one of logs / APM / tracing / related Agent capabilities. AI tools allowed if declared. Teams 1–3. Build window through 2026-10-31. Exact online submission form fields may be published by organizers — confirm on the official registration/submission portal before upload.
+Build a useful MongoDB-powered app; use Datadog to observe, detect, investigate, and resolve an operational challenge end-to-end (incident → recovery). MongoDB expectations include time-series, aggregations/window functions, TTL. Datadog expectations include dashboard + monitor/alert plus at least one of logs / APM / tracing / related Agent capabilities. AI tools allowed if declared. Teams 1–3.
+
+**Finals scoring (official public):** Creativity 30% · Technical 30% · Impact 30% · Presentation 10%.
+
+**Human compliance (mandatory):**
+
+1. Confirm final submission form + any video-duration restrictions on the organizer portal.  
+2. Grant judge read access to this **private** repo using accounts supplied by organizers.  
+3. Keep access through **2026-11-22**.  
+4. Submit before **2026-10-31 23:59 ICT**.  
+5. Do **not** modify the repository after the deadline.
