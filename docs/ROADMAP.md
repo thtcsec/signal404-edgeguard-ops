@@ -1,28 +1,22 @@
 # Roadmap
 
-Solo build. One convincing incident, not more services.
+## Done (build window)
 
-## Done before 2026-10-17
+- MongoDB time-series ingest + TTL
+- `$setWindowFields` thermal detection
+- Polling safe-profile remediation + continuous recovery evidence
+- Datadog DogStatsD, logs, dashboard/monitor, live ALERT→OK
+- APM Bundle (live service verified: telemetry-api)
+- Submission docs, demo storyboard, judge deck
 
-Scaffold recorded in [PRE_HACKATHON_BASELINE.md](PRE_HACKATHON_BASELINE.md).
+## Optional before final upload
 
-## Official build window: 2026-10-17 → 2026-10-31
+- Re-verify APM services for analyzer + response-worker in Datadog UI
+- Record ≤3 min demo video
+- Confirm official portal fields
 
-Submission deadline: **2026-10-31 23:59 ICT**.
+## Later (post-hackathon)
 
-### Done
-
-1. Create the `telemetry` time-series collection (`expireAfterSeconds`) and regular collections.
-2. Implement ingest on `POST /telemetry` and synthetic simulator (`NORMAL`, `THERMAL_THROTTLE`, …).
-3. Health analyzer: aggregation + `$setWindowFields`, open thermal incident.
-4. Response worker: poll incidents, switch to safe profile, observe recovery, resolve.
-5. Commanded vs reported profile; atomic status updates; continuous recovery evidence.
-6. Datadog DogStatsD + APM hooks + repo-defined dashboard/monitor (agent optional).
-
-### Next
-
-7. Demo video, slides, submission disclosure.
-
-## Explicitly deferred
-
-Kubernetes, Kafka, Redis, RabbitMQ, custom frontend, authentication, multi-cloud, ML models, LLM agents.
+- Change streams instead of/in addition to polling
+- Multi-site fleet scale tests
+- Trace-context propagation across poll workers

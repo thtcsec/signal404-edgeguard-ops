@@ -1,0 +1,55 @@
+{
+  "incident_id": "inc-thermal-edge-001-20261018085058",
+  "remediation_id": "act-safe-edge-001-20261018085250",
+  "device_id": "edge-001",
+  "source": "MongoDB edgeguard collections on live validation run 2026-10-18",
+  "timestamps_utc": {
+    "first_telemetry": "2026-10-18T08:50:17.829Z",
+    "detected_at": "2026-10-18T08:50:58.764Z",
+    "remediation_requested_at": "2026-10-18T08:52:50.208Z",
+    "remediation_completed_at": "2026-10-18T08:53:08.451Z",
+    "resolved_at": "2026-10-18T08:53:08.442Z"
+  },
+  "timings_seconds": {
+    "first_telemetry_to_detection": 40.9,
+    "detection_to_remediation_request": 111.4,
+    "remediation_request_to_verified": 18.2,
+    "detection_to_resolved": 129.7
+  },
+  "methodology": {
+    "detection_latency": "Time from first stored telemetry sample for edge-001 in this run to incidents.detectedAt. Analyzer poll interval was 5s; values depend on heat ramp and window aggregation readiness.",
+    "detection_to_remediation": "STAGED DEMO: response-worker was intentionally started ~140s after heat began so the Datadog demo monitor could reach ALERT before remediation. This interval is NOT autonomous closed-loop latency.",
+    "recovery_duration": "remediation_actions.requestedAt → completedAt while observation window verified continuous healthy reported-safe telemetry (Remediation__ObservationSeconds=15).",
+    "before_metrics": "Average of telemetry samples from 08:50:40Z through detectedAt (18 samples).",
+    "after_metrics": "Average of first 20 safe-profile samples at/after resolvedAt through 08:53:40Z.",
+    "incident_evidence_snapshot": "Stored on the incident document by the analyzer at open time (1m window averages)."
+  },
+  "metrics": {
+    "at_detection_incident_evidence": {
+      "gpu_temperature_c": 85.1,
+      "inference_latency_ms": 136.0,
+      "fps": 17.4,
+      "dropped_frames": 21
+    },
+    "avg_before_detection_window": {
+      "gpu_temperature_c": 92.3,
+      "inference_latency_ms": 177.3,
+      "fps": 12.1
+    },
+    "avg_after_resolve_safe": {
+      "gpu_temperature_c": 54.1,
+      "inference_latency_ms": 59.6,
+      "fps": 18.0
+    }
+  },
+  "deltas_observed_synthetic": {
+    "gpu_temperature_c": { "before_avg": 92.3, "after_avg": 54.1, "change": -38.2 },
+    "inference_latency_ms": { "before_avg": 177.3, "after_avg": 59.6, "change": -117.7 },
+    "fps": { "before_avg": 12.1, "after_avg": 18.0, "change": 5.9 }
+  },
+  "caveats": [
+    "All telemetry is synthetic (device simulator). Do not claim production fleet results.",
+    "detection_to_remediation_request includes intentional worker delay for Datadog ALERT visibility.",
+    "Monitor ALERT→OK observed on demo monitor (avg last_2m); production monitor uses last_5m."
+  ]
+}

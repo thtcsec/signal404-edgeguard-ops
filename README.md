@@ -36,7 +36,22 @@ Implemented path: simulator → ingest → `$setWindowFields` detection → **po
 
 ## Hackathon
 
-MUGVN Hackathon 2026, Real-time Operations, with MongoDB and Datadog. Official build window: 2026-10-17 through 2026-10-31. Submission deadline: 2026-10-31 23:59 ICT. Pre-existing baseline disclosure: [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md).
+MUGVN Hackathon 2026, Real-time Operations, with MongoDB and Datadog. Official build window: 2026-10-17 through 2026-10-31. Submission deadline: 2026-10-31 23:59 ICT.
+
+**Submission package**
+
+| Doc | Purpose |
+| --- | --- |
+| [docs/SUBMISSION.md](docs/SUBMISSION.md) | Overview for judges |
+| [docs/JUDGING_MATRIX.md](docs/JUDGING_MATRIX.md) | Creativity / Technical / Impact / Presentation map |
+| [docs/IMPACT.md](docs/IMPACT.md) | Measured synthetic outcomes + caveats |
+| [docs/FINAL_CHECKLIST.md](docs/FINAL_CHECKLIST.md) | Readiness checklist |
+| [docs/DEMO_STORYBOARD.md](docs/DEMO_STORYBOARD.md) | 3-minute storyboard |
+| [docs/DEMO_SCRIPT_VI.md](docs/DEMO_SCRIPT_VI.md) | Vietnamese narration |
+| [docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx](docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx) | 8-slide judge deck |
+| [docs/evidence/](docs/evidence/) | Live Datadog + performance JSON |
+
+Pre-existing baseline disclosure: [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md). AI/reuse: [docs/AI_AND_REUSE_DISCLOSURE.md](docs/AI_AND_REUSE_DISCLOSURE.md).
 
 ## Stack
 
