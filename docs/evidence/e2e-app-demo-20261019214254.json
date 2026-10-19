@@ -1,0 +1,33 @@
+﻿{
+    "device":  null,
+    "incident":  {
+                     "_id":  "inc-thermal-edge-001-20261019144446",
+                     "deviceId":  "edge-001",
+                     "type":  "thermal_throttling",
+                     "severity":  "high",
+                     "status":  "RESOLVED",
+                     "detectedAt":  "2026-10-19T14:44:46.540Z",
+                     "resolvedAt":  "2026-10-19T14:45:15.632Z",
+                     "evidence":  {
+                                      "gpuTemperature":  85.66162790697673,
+                                      "inferenceLatencyMs":  138.98116279069765,
+                                      "fps":  17.048837209302327,
+                                      "droppedFrames":  22
+                                  },
+                     "rootCause":  "Thermal throttling suspected: GPU 1m avg 85.7C vs trailing 5m 85.7C; latency 1m 139.0ms vs trailing 5m 139.0ms; packet loss 0.16%, network latency 9.9ms (network path looks calm relative to thermal/inference degradation).",
+                     "remediationId":  "act-safe-edge-001-20261019144450"
+                 },
+    "desktop_capture":  "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\recordings\\desktop-e2e-20261019214254.mp4",
+    "captured_at_utc":  "2026-10-19T14:45:37.0945497Z",
+    "remediation":  {
+                        "_id":  "act-safe-edge-001-20261019144450",
+                        "incidentId":  "inc-thermal-edge-001-20261019144446",
+                        "deviceId":  "edge-001",
+                        "actionType":  "SWITCH_TO_SAFE_PROFILE",
+                        "state":  "VERIFIED",
+                        "requestedAt":  "2026-10-19T14:44:50.365Z",
+                        "completedAt":  "2026-10-19T14:45:15.648Z"
+                    },
+    "mode":  "automatic_e2e_workers_prestarted",
+    "run_id":  "20261019214254"
+}

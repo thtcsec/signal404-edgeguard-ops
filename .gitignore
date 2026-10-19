@@ -24,17 +24,26 @@ secrets/
 # Host JSON logs tailed by Datadog Agent (Compose mount ./.logs)
 .logs/
 
-# Demo video large binaries (rebuild via scripts/build-demo-video.py)
+# Demo video large binaries (rebuild via scripts/build-*-demo-video.py)
 docs/video/**/*.mp4
 docs/video/**/*.wav
 docs/video/**/*.mp3
+docs/video/**/*.webm
 docs/video/raw/
+docs/video/raw-app/
 docs/video/scenes/
 docs/video/audio/
+docs/video/recordings/pw-video/
+docs/video/recordings/pw-video-archive/
+docs/video/.dd-browser-profile/
 !docs/video/edgeguard-ops-subtitles.srt
 !docs/video/video-build-manifest.json
 !docs/video/preview-frames/
 !docs/video/captures/
+!docs/video/recordings/*.json
+!docs/video/recordings/*.txt
+!docs/video/recordings/*.png
+!docs/video/recordings/dd-frames/
 
 # OS and editors
 .DS_Store

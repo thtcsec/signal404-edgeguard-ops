@@ -1,95 +1,38 @@
 {
   "output": "docs/video/edgeguard-ops-final-demo.mp4",
-  "subtitles": "docs/video/edgeguard-ops-subtitles.srt",
-  "voiceover": "docs/video/voiceover-vi.wav",
-  "backup_v1": "docs/video/edgeguard-ops-final-demo.v1-backup.mp4",
-  "duration_seconds": 178.833333,
-  "size_bytes": 5761076,
+  "kind": "real_application_demo",
+  "duration_seconds": 165.071995,
+  "size_bytes": 13103343,
   "video_codec": "h264",
   "audio_codec": "aac",
   "width": 1920,
   "height": 1080,
-  "fps": 30.0,
-  "voice": "gTTS lang=vi (consistent across all segments)",
-  "tts_engine": "gtts",
-  "srt_cues": 36,
-  "silence_gap_seconds": 0.22,
-  "segments": [
-    {
-      "id": "01_open",
-      "t0": 0.0,
-      "t1": 25.87201814058957,
-      "scene_dur": 26.09201814058957
-    },
-    {
-      "id": "02_arch",
-      "t0": 26.09201814058957,
-      "t1": 48.19603174603175,
-      "scene_dur": 22.324013605442175
-    },
-    {
-      "id": "03_thermal",
-      "t0": 48.41603174603175,
-      "t1": 68.16804988662132,
-      "scene_dur": 19.97201814058957
-    },
-    {
-      "id": "04_datadog_alert",
-      "t0": 68.38804988662132,
-      "t1": 91.78804988662131,
-      "scene_dur": 23.619999999999997
-    },
-    {
-      "id": "05_respond",
-      "t0": 92.00804988662131,
-      "t1": 109.8640589569161,
-      "scene_dur": 18.076009070294784
-    },
-    {
-      "id": "06_verify",
-      "t0": 110.0840589569161,
-      "t1": 132.4040589569161,
-      "scene_dur": 22.54
-    },
-    {
-      "id": "07_impact",
-      "t0": 132.6240589569161,
-      "t1": 161.52006802721087,
-      "scene_dur": 29.116009070294783
-    },
-    {
-      "id": "08_close",
-      "t0": 161.74006802721087,
-      "t1": 178.82807256235827,
-      "scene_dur": 17.08800453514739
-    }
-  ],
-  "metrics_source": "docs/evidence/performance-metrics.json",
-  "metrics_used": {
-    "gpu_b": 92.3,
-    "gpu_a": 54.1,
-    "lat_b": 177.3,
-    "lat_a": 59.6,
-    "fps_b": 12.1,
-    "fps_a": 18.0,
-    "detect_s": 40.9,
-    "rem_s": 111.4,
-    "ver_s": 18.2,
-    "incident": "inc-thermal-edge-001-20261018085058",
-    "device": "edge-001"
+  "fps": 30,
+  "tts_engine": "edge-tts",
+  "tts_voice": "vi-VN-NamMinhNeural",
+  "tts_fallback_used": false,
+  "voice_consistency": "single_engine_single_voice_entire_track",
+  "footage_sources": {
+    "datadog_dashboard_video": "docs/video/recordings/dd-final-2.mp4",
+    "datadog_dashboard_still": "docs/video/recordings/still-dashboard.png",
+    "datadog_monitor_still": "docs/video/recordings/still-monitor.png",
+    "terminal_evidence": "docs/video/recordings/terminal-evidence-20261019215511.mp4"
+  },
+  "incident_run": {
+    "id": "inc-thermal-edge-001-20261019144446",
+    "mode": "automatic_e2e_workers_prestarted",
+    "evidence": "docs/evidence/e2e-app-demo-20261019214254.json",
+    "remediation": "act-safe-edge-001-20261019144450",
+    "final": "RESOLVED / VERIFIED"
   },
   "disclosures": [
-    "All demo telemetry is synthetic and labeled.",
-    "ALERT/OK cards are reconstructions from verified history — not live UI captures.",
-    "Datadog graphs are authentic API historical snapshots for the verified incident window.",
-    "monitor-status.json current state alone does not prove ALERT and OK.",
-    "Staged worker delay disclosed; remediation interval is not autonomous MTTA.",
-    "MongoDB before/after averages ≠ Datadog aggregated graph series (different aggregation)."
+    "Telemetry is synthetic and labeled on-screen.",
+    "This primary sequence is the automatic E2E run (workers pre-started).",
+    "Monitor ALERT may be brief/absent vs staged-delay demo; monitor UI shows OK after recovery.",
+    "Staged Alert demo (delayed worker) is a separate historical validation — not spliced as one continuous run.",
+    "Safe-mode FPS ≈ 18 — not a claim of 30 FPS restoration.",
+    "111.4s staged interval is NOT used as autonomous MTTA in this video."
   ],
-  "qa_patch": true,
-  "target_duration_range": [
-    175,
-    179
-  ],
-  "duration_ok": true
+  "duration_ok": true,
+  "slideshow_backup": "docs/video/edgeguard-ops-final-demo.slideshow-backup.mp4"
 }

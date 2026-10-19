@@ -1,144 +1,46 @@
 1
-00:00:00,000 --> 00:00:03,324
-Xin chào ban giám khảo.
+00:00:00,000 --> 00:00:08,000
+Xin chào — EdgeGuard Ops · Signal404
 
 2
-00:00:03,324 --> 00:00:07,950
-Signal404 — dự án EdgeGuard Ops.
+00:00:08,000 --> 00:00:22,000
+Dashboard Datadog thật — không phải slide
 
 3
-00:00:07,950 --> 00:00:12,141
-Camera AI edge chạy liên tục.
+00:00:22,000 --> 00:00:36,000
+Telemetry synthetic ·
+quan sát Datadog thật
 
 4
-00:00:12,141 --> 00:00:17,141
-GPU nóng → FPS giảm, phát hiện muộn.
+00:00:36,000 --> 00:00:50,000
+Automatic E2E — worker
+chạy sẵn trước fault
 
 5
-00:00:17,141 --> 00:00:21,911
-Cần phát hiện sớm, xử lý an toàn,
+00:00:50,000 --> 00:01:08,000
+Thermal: GPU ↑ latency ↑ FPS ↓
 
 6
-00:00:21,911 --> 00:00:25,872
-và chứng minh đã hồi phục.
+00:01:08,000 --> 00:01:28,000
+commanded_profile=safe
+· reported_profile=safe
 
 7
-00:00:26,092 --> 00:00:31,092
-Detect → Investigate → Respond → Verify.
+00:01:28,000 --> 00:01:48,000
+MITIGATING → RECOVERING → RESOLVED
 
 8
-00:00:31,092 --> 00:00:36,092
-MongoDB Time Series = nguồn sự thật.
+00:01:48,000 --> 00:02:05,000
+Remediation VERIFIED trên MongoDB
 
 9
-00:00:36,092 --> 00:00:41,038
-Datadog = mặt quan sát vận hành.
+00:02:05,000 --> 00:02:22,000
+Safe mode ≈ 18 FPS — không claim 30 FPS
 
 10
-00:00:41,038 --> 00:00:48,196
-Telemetry demo: synthetic, có nhãn.
+00:02:22,000 --> 00:02:38,000
+Monitor OK · Alert staged là run riêng
 
 11
-00:00:48,416 --> 00:00:53,416
-Thermal throttle — dữ liệu giả lập.
-
-12
-00:00:53,416 --> 00:00:58,164
-GPU ↑ · latency ↑ · FPS ↓
-
-13
-00:00:58,164 --> 00:01:08,168
-MongoDB $setWindowFields phát hiện xu
-hướng.
-
-14
-00:01:08,388 --> 00:01:13,129
-Dashboard: GPU · latency · FPS.
-
-15
-00:01:13,129 --> 00:01:18,129
-Thẻ ALERT = tái dựng (đã xác nhận),
-
-16
-00:01:18,129 --> 00:01:21,647
-không phải ảnh UI live.
-
-17
-00:01:21,647 --> 00:01:26,235
-Staged: worker khởi động muộn.
-
-18
-00:01:26,235 --> 00:01:31,788
-Không phải MTTA tự động thuần túy.
-
-19
-00:01:32,008 --> 00:01:36,251
-commanded_profile = safe
-
-20
-00:01:36,251 --> 00:01:40,317
-reported_profile = safe
-
-21
-00:01:40,317 --> 00:01:44,030
-Commanded ≠ reported.
-
-22
-00:01:44,030 --> 00:01:49,864
-Telemetry full ≠ bằng chứng safe.
-
-23
-00:01:50,084 --> 00:01:54,903
-Recovery = chuỗi mẫu healthy liên tục.
-
-24
-00:01:54,903 --> 00:01:59,215
-Lịch sử: ALERT → OK (đã xác nhận).
-
-25
-00:01:59,215 --> 00:02:04,215
-MongoDB RESOLVED · remediation VERIFIED.
-
-26
-00:02:04,215 --> 00:02:09,161
-monitor-status.json hiện tại = OK only.
-
-27
-00:02:09,161 --> 00:02:12,404
-Bằng chứng cứng: MongoDB.
-
-28
-00:02:12,624 --> 00:02:17,624
-Synthetic — cửa sổ MongoDB đo được:
-
-29
-00:02:17,624 --> 00:02:20,457
-GPU 92.3→54.1°C
-
-30
-00:02:20,457 --> 00:02:24,423
-Latency 177.3→59.6 ms
-
-31
-00:02:24,423 --> 00:02:29,145
-FPS 12.1→18.0 (safe ≠ 30)
-
-32
-00:02:29,145 --> 00:02:33,489
-40.9s: mẫu đầu → detect
-
-33
-00:02:33,489 --> 00:02:41,520
-111.4s: gồm trì hoãn worker staged
-
-34
-00:02:41,740 --> 00:02:46,740
-APM live: telemetry-api (đã xác nhận).
-
-35
-00:02:46,740 --> 00:02:51,740
-Detect → Investigate → Respond → Verify.
-
-36
-00:02:51,740 --> 00:02:58,828
-Signal404 · Cảm ơn ban giám khảo.
+00:02:38,000 --> 00:02:45,072
+Detect → Investigate → Respond → Verify
