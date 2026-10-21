@@ -1,0 +1,40 @@
+{
+    "captured_at_utc":  "2026-10-21T13:16:29.2625295Z",
+    "simulator_started_utc":  "2026-10-21T13:15:10.0336298Z",
+    "incident":  {
+                     "_id":  "inc-thermal-edge-001-20261021131556",
+                     "deviceId":  "edge-001",
+                     "status":  "RESOLVED",
+                     "type":  "thermal_throttling",
+                     "detectedAt":  "2026-10-21T13:15:56.977Z",
+                     "resolvedAt":  "2026-10-21T13:16:26.564Z",
+                     "remediationId":  "act-safe-edge-001-20261021131601"
+                 },
+    "device":  {
+                   "_id":  "edge-001",
+                   "profile":  "safe",
+                   "status":  "healthy",
+                   "name":  "Edge Camera edge-001"
+               },
+    "sim_mp4":  "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\recordings\\conhost-sim-start.mp4",
+    "sim_log":  "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\recordings\\term-sim-20261021201508.log",
+    "telemetry":  {
+                      "timestamp":  "2026-10-21T13:16:28.867Z",
+                      "profile":  "safe",
+                      "status":  "healthy",
+                      "gpuTemperature":  54.11,
+                      "fps":  18,
+                      "inferenceLatencyMs":  57.75,
+                      "deviceId":  "edge-001"
+                  },
+    "remediation":  {
+                        "_id":  "act-safe-edge-001-20261021131601",
+                        "incidentId":  "inc-thermal-edge-001-20261021131556",
+                        "deviceId":  "edge-001",
+                        "state":  "VERIFIED",
+                        "actionType":  "SWITCH_TO_SAFE_PROFILE",
+                        "requestedAt":  "2026-10-21T13:16:01.360Z",
+                        "completedAt":  "2026-10-21T13:16:26.570Z"
+                    },
+    "run_id":  "20261021201508"
+}

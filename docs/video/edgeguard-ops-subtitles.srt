@@ -1,46 +1,35 @@
 1
-00:00:00,000 --> 00:00:08,000
-Xin chào — EdgeGuard Ops · Signal404
+00:00:00,000 --> 00:00:03,200
+EdgeGuard Ops — automatic closed loop on synthetic edge cameras.
 
 2
-00:00:08,000 --> 00:00:22,000
-Dashboard Datadog thật — không phải slide
+00:00:03,200 --> 00:00:15,200
+INJECT: start THERMAL_THROTTLE from a healthy full profile (~65°C, 29 FPS).
 
 3
-00:00:22,000 --> 00:00:36,000
-Telemetry synthetic ·
-quan sát Datadog thật
+00:00:15,200 --> 00:00:50,200
+GPU rises past 85°C and FPS drops. This is the injected thermal fault.
 
 4
-00:00:36,000 --> 00:00:50,000
-Automatic E2E — worker
-chạy sẵn trước fault
+00:00:50,200 --> 00:01:02,200
+commanded_profile=safe is applied. Telemetry recovers to ~54°C / 18 FPS.
 
 5
-00:00:50,000 --> 00:01:08,000
-Thermal: GPU ↑ latency ↑ FPS ↓
+00:01:02,200 --> 00:01:15,200
+DETECT: Datadog 3-minute window for E2E 20261021202014 only — synthetic telemetry.
 
 6
-00:01:08,000 --> 00:01:28,000
-commanded_profile=safe
-· reported_profile=safe
+00:01:15,200 --> 00:01:19,700
+RESPOND: Remediation APPLIED — commanded_profile=safe. act-safe-edge-001-20261021132102
 
 7
-00:01:28,000 --> 00:01:48,000
-MITIGATING → RECOVERING → RESOLVED
+00:01:19,700 --> 00:01:23,000
+Incident RESOLVED after healthy safe-profile telemetry. inc-thermal-edge-001-20261021132057
 
 8
-00:01:48,000 --> 00:02:05,000
-Remediation VERIFIED trên MongoDB
+00:01:23,000 --> 00:01:26,900
+VERIFY: MongoDB status=RESOLVED, action=VERIFIED, device.profile=safe.
 
 9
-00:02:05,000 --> 00:02:22,000
-Safe mode ≈ 18 FPS — không claim 30 FPS
-
-10
-00:02:22,000 --> 00:02:38,000
-Monitor OK · Alert staged là run riêng
-
-11
-00:02:38,000 --> 00:02:45,072
-Detect → Investigate → Respond → Verify
+00:01:26,900 --> 00:01:30,100
+Inject Fault → Detect → Respond → Verify

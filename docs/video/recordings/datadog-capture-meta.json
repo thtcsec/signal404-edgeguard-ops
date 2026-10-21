@@ -1,31 +1,44 @@
 {
   "dashboard": "https://app.datadoghq.com/dashboard/9rr-a4u-2st",
-  "monitor": "https://app.datadoghq.com/monitors/333934695",
+  "from_ts": null,
+  "to_ts": null,
+  "incident_id": null,
+  "include_monitor": false,
+  "run_meta": {
+    "preserved_prior_runs": [
+      "20261021183352",
+      "20261021201508"
+    ],
+    "captured_at_utc": "2026-10-21T13:21:51.9496796Z",
+    "run_id": "20261021202014",
+    "to_ts": 1792588991949,
+    "incident_id": "inc-thermal-edge-001-20261021132057",
+    "detected_at": "2026-10-21T13:20:57.469Z",
+    "resolved_at": "2026-10-21T13:21:27.293Z",
+    "evidence": "docs/evidence/e2e-verified-20261021202014.json",
+    "verdict": "PASSED",
+    "worker_mp4": "docs/video/recordings/conhost-worker-respond.mp4",
+    "mongo_mp4": "docs/video/recordings/conhost-mongo-verify.mp4",
+    "from_ts": 1792588794987,
+    "simulator_started_utc": "2026-10-21T13:20:14.9871465Z",
+    "remediation_id": "act-safe-edge-001-20261021132102",
+    "simulator_mp4": "docs/video/recordings/conhost-sim-start.mp4"
+  },
+  "dashboard_target": "https://app.datadoghq.com/dashboard/9rr-a4u-2st?from_ts=1792588794987&to_ts=1792588991949&live=false&refresh_mode=paused&fromUser=true",
   "dashboard_ready": {
     "svg_paths": 705,
     "spinners": 0,
     "hasGpu": true,
     "hasLogsTitle": true,
     "emptyLogs": false,
-    "logHits": 6
+    "logHits": 3,
+    "incidentVisible": true,
+    "appliedVisible": true,
+    "resolvedVisible": true
   },
-  "dashboard_url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st?fromUser=false&refresh_mode=sliding&from_ts=1792580032930&to_ts=1792583632930&live=true",
-  "monitor_ready": {
-    "tokens": [
-      "OK",
-      "ALERT"
-    ],
-    "svg": 679,
-    "hasName": true
-  },
-  "monitor_body_snippet": "Skip to main content\nWelcome, T\u00fa!\nGet Started\nYou are 67% done setting up\nYou have 11 days left in your trial.\nUpgrade\nSearch Datadog\nCtrl\nK\nAsk Bits\nBits AI\nDashboards\nMonitoring\nDeveloper Portal\nIncident Response\nAutomation\nInfrastructure\nCloud Cost\nAPM\nDigital Experience\nSoftware Delivery\nSecurity\nData Observability\nAI Observability\nErrors\nMetrics\nLogs\nIntegrations\nInvite\nSupport\nNEW\nHelp\nMonitors\nStatus\nStatus\nOK\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nedgeguard-ops\nDetails\nDeclare Incident\nInvestigate\nEdgeGuard - GPU thermal throttling (demo)\ndevice_id\n*\n*\nstatus\n*\n*\nmuted\n*\n*\n4h\nUTC+07:00\nEvaluated Data\nSource Data\nTransitions\nDatadog has found 5 changes that could explain this monitor\u2019s behavior\n0\n20\n40\n60\n80\n100\nalert recovery\ny > 85\n15:00\n15:15\n15:30\n15:45\n16:00\n16:15\n16:30\n16:45\n17:00\n17:15\n17:30\n17:45\n18:00\n18:15\n18:30\n18:45\nQuery\nView in Metrics Explorer\navg(last_2m):avg:edgeguard.devi",
-  "monitor_tokens_seen": [
-    "Alert",
-    "ALERT",
-    "OK"
-  ],
+  "dashboard_url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st?fromUser=false&refresh_mode=paused&from_ts=1792588794987&to_ts=1792588991949&live=false",
   "videos": [
-    "docs/video/recordings/pw-video/page@7c2c7910a53aa0efce158a9dc58a7bea.webm"
+    "docs/video/recordings/pw-video/page@3b05888a29194481201615aafd4aad25.webm"
   ],
-  "captured_at": "2026-10-21T11:54:42Z"
+  "captured_at": "2026-10-21T13:34:51Z"
 }

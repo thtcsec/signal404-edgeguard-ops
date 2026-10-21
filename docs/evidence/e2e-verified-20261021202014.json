@@ -1,0 +1,73 @@
+﻿{
+    "mode":  "automatic_e2e_workers_prestarted_recorded",
+    "simulator_started_utc":  "2026-10-21T13:20:14.9871465Z",
+    "note":  "Fresh E2E from empty devices so first commanded profile is full. Video recorded via conhost gdigrab.",
+    "incident":  {
+                     "_id":  "inc-thermal-edge-001-20261021132057",
+                     "deviceId":  "edge-001",
+                     "status":  "RESOLVED",
+                     "type":  "thermal_throttling",
+                     "detectedAt":  "2026-10-21T13:20:57.469Z",
+                     "resolvedAt":  "2026-10-21T13:21:27.293Z",
+                     "remediationId":  "act-safe-edge-001-20261021132102"
+                 },
+    "verdict":  "PASSED",
+    "device":  {
+                   "_id":  "edge-001",
+                   "profile":  "safe",
+                   "status":  "healthy",
+                   "name":  "Edge Camera edge-001"
+               },
+    "assertions":  [
+                       {
+                           "detail":  "id=inc-thermal-edge-001-20261021132057",
+                           "ok":  true,
+                           "name":  "incident_present"
+                       },
+                       {
+                           "detail":  "status=RESOLVED",
+                           "ok":  true,
+                           "name":  "incident_resolved"
+                       },
+                       {
+                           "detail":  "state=VERIFIED",
+                           "ok":  true,
+                           "name":  "remediation_verified"
+                       },
+                       {
+                           "detail":  "profile=safe",
+                           "ok":  true,
+                           "name":  "device_profile_safe"
+                       },
+                       {
+                           "detail":  "profile=safe gpu=54.73 fps=18",
+                           "ok":  true,
+                           "name":  "telemetry_profile_safe"
+                       },
+                       {
+                           "detail":  "conhost-sim-start.mp4 recorded this run",
+                           "ok":  true,
+                           "name":  "sim_mp4_fresh"
+                       }
+                   ],
+    "remediation":  {
+                        "_id":  "act-safe-edge-001-20261021132102",
+                        "incidentId":  "inc-thermal-edge-001-20261021132057",
+                        "deviceId":  "edge-001",
+                        "state":  "VERIFIED",
+                        "actionType":  "SWITCH_TO_SAFE_PROFILE",
+                        "requestedAt":  "2026-10-21T13:21:02.182Z",
+                        "completedAt":  "2026-10-21T13:21:27.297Z"
+                    },
+    "run_id":  "20261021202014",
+    "captured_at_utc":  "2026-10-21T13:21:51.9496796Z",
+    "latest_telemetry":  {
+                             "timestamp":  "2026-10-21T13:21:30.432Z",
+                             "profile":  "safe",
+                             "status":  "healthy",
+                             "gpuTemperature":  54.73,
+                             "fps":  18,
+                             "inferenceLatencyMs":  60.9,
+                             "deviceId":  "edge-001"
+                         }
+}

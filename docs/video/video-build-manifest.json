@@ -1,10 +1,11 @@
 {
   "output": "docs/video/edgeguard-ops-final-demo.mp4",
-  "kind": "silent_real_application_demo",
-  "e2e_run_id": "20261021183352",
-  "incident_id": "inc-thermal-edge-001-20261021113510",
-  "duration_seconds": 72.0,
-  "size_bytes": 3252662,
+  "kind": "silent_editorial_judge_demo",
+  "e2e_run_id": "20261021202014",
+  "incident_id": "inc-thermal-edge-001-20261021132057",
+  "remediation_id": "act-safe-edge-001-20261021132102",
+  "duration_seconds": 90.1,
+  "size_bytes": 8816120,
   "video_codec": "h264",
   "audio_codec": "aac",
   "audio_note": "silent AAC (anullsrc) \u2014 no TTS, no voiceover",
@@ -13,8 +14,10 @@
   "fps": 30,
   "tts_engine": null,
   "voiceover": false,
-  "subtitles_burned_in": false,
+  "subtitles_burned_in": true,
+  "subtitles_file": "docs/video/edgeguard-ops-subtitles.srt",
   "duration_ok": true,
+  "duration_target_ok": true,
   "padded": false,
   "structure": [
     "Inject Fault",
@@ -22,20 +25,308 @@
     "Respond",
     "Verify"
   ],
+  "timeline": [
+    {
+      "name": "title",
+      "file": "s00.mp4",
+      "start": 0.0,
+      "end": 3.2
+    },
+    {
+      "name": "inject",
+      "file": "s01.mp4",
+      "start": 3.2,
+      "end": 62.2
+    },
+    {
+      "name": "detect",
+      "file": "s02.mp4",
+      "start": 62.2,
+      "end": 75.2
+    },
+    {
+      "name": "respond",
+      "file": "s03.mp4",
+      "start": 75.2,
+      "end": 83.0
+    },
+    {
+      "name": "verify",
+      "file": "s04.mp4",
+      "start": 83.0,
+      "end": 86.9
+    },
+    {
+      "name": "close",
+      "file": "s05.mp4",
+      "start": 86.9,
+      "end": 90.1
+    }
+  ],
+  "sim_cuts": {
+    "gpu85": 22.0,
+    "safe": 45.0
+  },
   "sources": {
     "simulator_conhost": "docs/video/recordings/conhost-sim-start.mp4",
-    "dashboard_video": "docs/video/recordings/dd-final-loaded.mp4",
+    "dashboard_video": "docs/video/recordings/dd-editorial.mp4",
+    "worker_conhost": "docs/video/recordings/conhost-worker-respond.mp4",
     "mongo_conhost": "docs/video/recordings/conhost-mongo-verify.mp4"
   },
-  "excluded_sources": [
-    "desktop-e2e-*.mp4 (unrelated desktop apps)",
-    "dd-live-loaded.mp4 (gdigrab captured foreground YouTube)",
-    "terminal-evidence-mongo.mp4 (HTML dump, replaced by conhost)",
-    "monitor Event Timeline 18:29 ALERT (prior same-day attempt, not E2E 18:35)"
+  "freezedetect": [
+    {
+      "start": 0.0,
+      "end": 3.2,
+      "duration": 3.2
+    },
+    {
+      "start": 4.833333,
+      "end": 6.9,
+      "duration": 2.0666670000000007
+    },
+    {
+      "start": 6.9,
+      "end": 8.933333,
+      "duration": 2.033332999999999
+    },
+    {
+      "start": 8.933333,
+      "end": 10.966667,
+      "duration": 2.033334
+    },
+    {
+      "start": 11.966667,
+      "end": 14.0,
+      "duration": 2.0333330000000007
+    },
+    {
+      "start": 17.1,
+      "end": 19.133333,
+      "duration": 2.033332999999999
+    },
+    {
+      "start": 20.166667,
+      "end": 22.2,
+      "duration": 2.033332999999999
+    },
+    {
+      "start": 22.2,
+      "end": 24.233333,
+      "duration": 2.033332999999999
+    },
+    {
+      "start": 24.233333,
+      "end": 36.566667,
+      "duration": 12.333334000000004
+    },
+    {
+      "start": 63.433333,
+      "end": 68.533333,
+      "duration": 5.100000000000001
+    },
+    {
+      "start": 68.566667,
+      "end": 73.633333,
+      "duration": 5.066665999999998
+    },
+    {
+      "start": 75.2,
+      "end": 78.6,
+      "duration": 3.3999999999999915
+    },
+    {
+      "start": 79.7,
+      "end": 83.0,
+      "duration": 3.299999999999997
+    },
+    {
+      "start": 83.0,
+      "end": 86.9,
+      "duration": 3.9000000000000057
+    }
+  ],
+  "long_freezes": [
+    {
+      "start": 24.233333,
+      "end": 36.566667,
+      "duration": 12.333334000000004,
+      "justification": "live console: telemetry lines update on a black field (few pixels change)"
+    },
+    {
+      "start": 63.433333,
+      "end": 68.533333,
+      "duration": 5.100000000000001,
+      "justification": "paused Datadog 3-minute window \u2014 graphs are historical, not live-ticking"
+    },
+    {
+      "start": 68.566667,
+      "end": 73.633333,
+      "duration": 5.066665999999998,
+      "justification": "paused Datadog 3-minute window \u2014 graphs are historical, not live-ticking"
+    }
+  ],
+  "qa_frames": [
+    {
+      "n": 1,
+      "t": 0.0,
+      "kind": "tick",
+      "file": "editorial-qa-01.png"
+    },
+    {
+      "n": 2,
+      "t": 5.0,
+      "kind": "tick",
+      "file": "editorial-qa-02.png"
+    },
+    {
+      "n": 3,
+      "t": 10.0,
+      "kind": "tick",
+      "file": "editorial-qa-03.png"
+    },
+    {
+      "n": 4,
+      "t": 15.0,
+      "kind": "tick",
+      "file": "editorial-qa-04.png"
+    },
+    {
+      "n": 5,
+      "t": 20.0,
+      "kind": "tick",
+      "file": "editorial-qa-05.png"
+    },
+    {
+      "n": 6,
+      "t": 25.0,
+      "kind": "tick",
+      "file": "editorial-qa-06.png"
+    },
+    {
+      "n": 7,
+      "t": 30.0,
+      "kind": "tick",
+      "file": "editorial-qa-07.png"
+    },
+    {
+      "n": 8,
+      "t": 35.0,
+      "kind": "tick",
+      "file": "editorial-qa-08.png"
+    },
+    {
+      "n": 9,
+      "t": 40.0,
+      "kind": "tick",
+      "file": "editorial-qa-09.png"
+    },
+    {
+      "n": 10,
+      "t": 45.0,
+      "kind": "tick",
+      "file": "editorial-qa-10.png"
+    },
+    {
+      "n": 11,
+      "t": 50.0,
+      "kind": "tick",
+      "file": "editorial-qa-11.png"
+    },
+    {
+      "n": 12,
+      "t": 55.0,
+      "kind": "tick",
+      "file": "editorial-qa-12.png"
+    },
+    {
+      "n": 13,
+      "t": 60.0,
+      "kind": "tick",
+      "file": "editorial-qa-13.png"
+    },
+    {
+      "n": 14,
+      "t": 65.0,
+      "kind": "tick",
+      "file": "editorial-qa-14.png"
+    },
+    {
+      "n": 15,
+      "t": 70.0,
+      "kind": "tick",
+      "file": "editorial-qa-15.png"
+    },
+    {
+      "n": 16,
+      "t": 75.0,
+      "kind": "tick",
+      "file": "editorial-qa-16.png"
+    },
+    {
+      "n": 17,
+      "t": 80.0,
+      "kind": "tick",
+      "file": "editorial-qa-17.png"
+    },
+    {
+      "n": 18,
+      "t": 85.0,
+      "kind": "tick",
+      "file": "editorial-qa-18.png"
+    },
+    {
+      "n": 19,
+      "t": 90.0,
+      "kind": "tick",
+      "file": "editorial-qa-19.png"
+    },
+    {
+      "n": 20,
+      "t": 0.15,
+      "kind": "scene",
+      "file": "editorial-qa-20.png"
+    },
+    {
+      "n": 21,
+      "t": 3.35,
+      "kind": "scene",
+      "file": "editorial-qa-21.png"
+    },
+    {
+      "n": 22,
+      "t": 62.35,
+      "kind": "scene",
+      "file": "editorial-qa-22.png"
+    },
+    {
+      "n": 23,
+      "t": 75.35,
+      "kind": "scene",
+      "file": "editorial-qa-23.png"
+    },
+    {
+      "n": 24,
+      "t": 83.15,
+      "kind": "scene",
+      "file": "editorial-qa-24.png"
+    },
+    {
+      "n": 25,
+      "t": 87.05,
+      "kind": "scene",
+      "file": "editorial-qa-25.png"
+    },
+    {
+      "n": 26,
+      "t": 89.7,
+      "kind": "end",
+      "file": "editorial-qa-26.png"
+    }
   ],
   "recording_notes": [
-    "OBS Studio is not installed on this machine.",
-    "Windows Terminal title-grab records a black frame; classic conhost.exe GDI grab is used.",
-    "Simulator recapture is a live start of THERMAL_THROTTLE; commanded profile is still safe from E2E so GPU stays ~54C. Datadog graphs are the 18:35 E2E, not this recapture."
+    "OBS Studio is not installed; classic conhost.exe + ffmpeg gdigrab is used.",
+    "Windows Terminal title-grab records a black frame and is not used.",
+    "Datadog captured with an explicit from_ts/to_ts window for this E2E; graph hover disabled.",
+    "Respond uses a 16:9 conhost of this run's worker log (APPLIED before RESOLVED), not a 1600:300 crop."
   ]
 }

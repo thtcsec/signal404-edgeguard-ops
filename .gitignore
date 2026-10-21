@@ -31,7 +31,10 @@ docs/video/**/*.mp3
 docs/video/**/*.webm
 docs/video/raw/
 docs/video/raw-silent/
+docs/video/raw-editorial/
 docs/video/raw-app/
+docs/evidence/mongo-backup-pre-editorial/
+docs/video/recordings/inspect-frames/
 docs/video/scenes/
 docs/video/audio/
 docs/video/recordings/pw-video/

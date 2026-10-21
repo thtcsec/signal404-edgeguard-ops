@@ -5,7 +5,8 @@ param(
     [Parameter(Mandatory = $true)][string]$ScriptPath,
     [Parameter(Mandatory = $true)][string]$OutMp4,
     [int]$Seconds = 22,
-    [int]$WarmupSeconds = 4
+    [int]$WarmupSeconds = 4,
+    [switch]$KeepAlive
 )
 
 $ErrorActionPreference = "Stop"
@@ -73,15 +74,32 @@ $ffArgs = @(
     "-movflags", "+frag_keyframe+empty_moov+default_base_moof",
     $OutMp4
 )
-Write-Host "CONHOST_REC title=$Title -> $OutMp4 ($Seconds s)"
+$meta = @{
+    title = $Title
+    script = $ScriptPath
+    output = $OutMp4
+    seconds = $Seconds
+    warmup_seconds = $WarmupSeconds
+    keep_alive = [bool]$KeepAlive
+    started_utc = (Get-Date).ToUniversalTime().ToString("o")
+}
+$metaPath = "$OutMp4.meta.json"
+($meta | ConvertTo-Json) | Set-Content -Path $metaPath -Encoding utf8
+
+Write-Host "CONHOST_REC title=$Title -> $OutMp4 ($Seconds s) keepAlive=$KeepAlive"
 & ffmpeg @ffArgs
 $ffExit = $LASTEXITCODE
+$meta.ended_utc = (Get-Date).ToUniversalTime().ToString("o")
+$meta.ffmpeg_exit = $ffExit
+if (Test-Path $OutMp4) { $meta.size_bytes = (Get-Item $OutMp4).Length }
+($meta | ConvertTo-Json) | Set-Content -Path $metaPath -Encoding utf8
 
-# Stop the console we launched (and its powershell child)
-Get-CimInstance Win32_Process | Where-Object {
-    $_.ParentProcessId -eq $proc.Id -or $_.ProcessId -eq $proc.Id
-} | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+if (-not $KeepAlive) {
+    Get-CimInstance Win32_Process | Where-Object {
+        $_.ParentProcessId -eq $proc.Id -or $_.ProcessId -eq $proc.Id
+    } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+    Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+}
 
 if ($ffExit -ne 0 -or -not (Test-Path $OutMp4) -or ((Get-Item $OutMp4).Length -lt 40000)) {
     Write-Host "CONHOST_REC_FAILED size=$((Get-Item $OutMp4 -ErrorAction SilentlyContinue).Length) exit=$ffExit"
