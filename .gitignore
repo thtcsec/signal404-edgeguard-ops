@@ -30,6 +30,7 @@ docs/video/**/*.wav
 docs/video/**/*.mp3
 docs/video/**/*.webm
 docs/video/raw/
+docs/video/raw-silent/
 docs/video/raw-app/
 docs/video/scenes/
 docs/video/audio/

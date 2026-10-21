@@ -1,16 +1,31 @@
 {
   "dashboard": "https://app.datadoghq.com/dashboard/9rr-a4u-2st",
   "monitor": "https://app.datadoghq.com/monitors/333934695",
-  "dashboard_url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st?fromUser=false&refresh_mode=sliding&from_ts=1792418312596&to_ts=1792421912596&live=true",
-  "monitor_body_snippet": "Skip to main content\nWelcome, T\u00fa!\nGet Started\nYou are 67% done setting up\nYou have 13 days left in your trial.\nUpgrade\nSearch Datadog\nCtrl\nK\nAsk Bits\nBits AI\nDashboards\nMonitoring\nDeveloper Portal\nIncident Response\nAutomation\nInfrastructure\nCloud Cost\nAPM\nDigital Experience\nSoftware Delivery\nSecurity\nData Observability\nAI Observability\nErrors\nMetrics\nLogs\nIntegrations\nInvite\nSupport\nNEW\nHelp\nMonitors\nStatus\nStatus\nOK\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nedgeguard-ops\nDetails\nDeclare Incident\nInvestigate\nEdgeGuard - GPU thermal throttling (demo)\ndevice_id\n*\n*\nstatus\n*\n*\nmuted\n*\n*\n4h\nUTC+07:00\nEvaluated Data\nSource Data\nTransitions\nNo changes detected in this time range\n0\n20\n40\n60\n80\n100\nalert recovery\ny > 85\n18:00\n18:15\n18:30\n18:45\n19:00\n19:15\n19:30\n19:45\n20:00\n20:15\n20:30\n20:45\n21:00\n21:15\n21:30\n",
+  "dashboard_ready": {
+    "svg_paths": 705,
+    "spinners": 0,
+    "hasGpu": true,
+    "hasLogsTitle": true,
+    "emptyLogs": false,
+    "logHits": 6
+  },
+  "dashboard_url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st?fromUser=false&refresh_mode=sliding&from_ts=1792580032930&to_ts=1792583632930&live=true",
+  "monitor_ready": {
+    "tokens": [
+      "OK",
+      "ALERT"
+    ],
+    "svg": 679,
+    "hasName": true
+  },
+  "monitor_body_snippet": "Skip to main content\nWelcome, T\u00fa!\nGet Started\nYou are 67% done setting up\nYou have 11 days left in your trial.\nUpgrade\nSearch Datadog\nCtrl\nK\nAsk Bits\nBits AI\nDashboards\nMonitoring\nDeveloper Portal\nIncident Response\nAutomation\nInfrastructure\nCloud Cost\nAPM\nDigital Experience\nSoftware Delivery\nSecurity\nData Observability\nAI Observability\nErrors\nMetrics\nLogs\nIntegrations\nInvite\nSupport\nNEW\nHelp\nMonitors\nStatus\nStatus\nOK\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nT\u00fa Tr\u1ecbnh Ho\u00e0ng\nedgeguard-ops\nDetails\nDeclare Incident\nInvestigate\nEdgeGuard - GPU thermal throttling (demo)\ndevice_id\n*\n*\nstatus\n*\n*\nmuted\n*\n*\n4h\nUTC+07:00\nEvaluated Data\nSource Data\nTransitions\nDatadog has found 5 changes that could explain this monitor\u2019s behavior\n0\n20\n40\n60\n80\n100\nalert recovery\ny > 85\n15:00\n15:15\n15:30\n15:45\n16:00\n16:15\n16:30\n16:45\n17:00\n17:15\n17:30\n17:45\n18:00\n18:15\n18:30\n18:45\nQuery\nView in Metrics Explorer\navg(last_2m):avg:edgeguard.devi",
   "monitor_tokens_seen": [
     "Alert",
     "ALERT",
     "OK"
   ],
   "videos": [
-    "docs/video/recordings/pw-video/page@c6ebd83e56f494b68a5d21cec3c4dba1.webm",
-    "docs/video/recordings/pw-video/page@cfde7d88958aad04f90ec91a200ca1d4.webm"
+    "docs/video/recordings/pw-video/page@7c2c7910a53aa0efce158a9dc58a7bea.webm"
   ],
-  "captured_at": "2026-10-19T15:00:37Z"
+  "captured_at": "2026-10-21T11:54:42Z"
 }

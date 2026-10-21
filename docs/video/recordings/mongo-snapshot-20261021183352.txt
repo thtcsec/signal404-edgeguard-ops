@@ -1,0 +1,151 @@
+﻿=== INCIDENT ===
+{
+  _id: 'inc-thermal-edge-001-20261021113510',
+  deviceId: 'edge-001',
+  type: 'thermal_throttling',
+  severity: 'high',
+  status: 'RESOLVED',
+  detectedAt: ISODate('2026-10-21T11:35:10.822Z'),
+  resolvedAt: ISODate('2026-10-21T11:35:40.163Z'),
+  evidence: {
+    gpuTemperature: 86.45808510638298,
+    inferenceLatencyMs: 142.28659574468085,
+    fps: 16.619787234042555,
+    droppedFrames: 23
+  },
+  rootCause: 'Thermal throttling suspected: GPU 1m avg 86.5C vs trailing 5m 86.5C; latency 1m 142.3ms vs trailing 5m 142.3ms; packet loss 0.17%, network latency 10.0ms (network path looks calm relative to thermal/inference degradation).',
+  remediationId: 'act-safe-edge-001-20261021113514'
+}
+=== REMEDIATION ===
+{
+  _id: 'act-safe-edge-001-20261021113514',
+  incidentId: 'inc-thermal-edge-001-20261021113510',
+  deviceId: 'edge-001',
+  actionType: 'SWITCH_TO_SAFE_PROFILE',
+  state: 'VERIFIED',
+  requestedAt: ISODate('2026-10-21T11:35:14.897Z'),
+  completedAt: ISODate('2026-10-21T11:35:40.174Z')
+}
+=== DEVICE (_id=edge-001) ===
+{
+  _id: 'edge-001',
+  name: 'Edge Camera edge-001',
+  site: 'factory-a',
+  line: 'line-02',
+  deviceType: 'edge-camera',
+  hardware: {
+    cpu: 'synthetic-cpu',
+    gpu: 'synthetic-gpu'
+  },
+  profile: 'safe',
+  status: 'healthy',
+  createdAt: ISODate('2026-10-21T11:34:22.277Z')
+}
+=== LAST 5 TELEMETRY ===
+[
+  {
+    timestamp: ISODate('2026-10-21T11:35:50.217Z'),
+    metadata: {
+      deviceId: 'edge-001',
+      line: 'line-02',
+      site: 'factory-a'
+    },
+    fps: 18,
+    memoryUsage: 55.34,
+    cpuUsage: 39.6,
+    _id: ObjectId('6ad8a396331dc47f73a55c7c'),
+    cpuTemperature: 50.71,
+    gpuTemperature: 55.38,
+    gpuUsage: 68.61,
+    inferenceLatencyMs: 60.88,
+    packetLossPct: 0.233,
+    droppedFrames: 0,
+    profile: 'safe',
+    networkLatencyMs: 9.31,
+    status: 'healthy'
+  },
+  {
+    timestamp: ISODate('2026-10-21T11:35:49.197Z'),
+    metadata: {
+      deviceId: 'edge-001',
+      line: 'line-02',
+      site: 'factory-a'
+    },
+    fps: 18,
+    memoryUsage: 54.87,
+    cpuUsage: 40.26,
+    _id: ObjectId('6ad8a395331dc47f73a55c7b'),
+    cpuTemperature: 51.4,
+    gpuTemperature: 53.99,
+    gpuUsage: 67.99,
+    inferenceLatencyMs: 57.84,
+    packetLossPct: 0.158,
+    droppedFrames: 0,
+    profile: 'safe',
+    networkLatencyMs: 9.17,
+    status: 'healthy'
+  },
+  {
+    timestamp: ISODate('2026-10-21T11:35:48.173Z'),
+    metadata: {
+      deviceId: 'edge-001',
+      line: 'line-02',
+      site: 'factory-a'
+    },
+    fps: 18,
+    memoryUsage: 52.89,
+    cpuUsage: 39.35,
+    _id: ObjectId('6ad8a394331dc47f73a55c7a'),
+    cpuTemperature: 49.18,
+    gpuTemperature: 53.54,
+    gpuUsage: 63.68,
+    inferenceLatencyMs: 60.28,
+    packetLossPct: 0.25,
+    droppedFrames: 0,
+    profile: 'safe',
+    networkLatencyMs: 9.21,
+    status: 'healthy'
+  },
+  {
+    timestamp: ISODate('2026-10-21T11:35:47.138Z'),
+    metadata: {
+      deviceId: 'edge-001',
+      line: 'line-02',
+      site: 'factory-a'
+    },
+    fps: 18,
+    memoryUsage: 52.89,
+    cpuUsage: 37.7,
+    _id: ObjectId('6ad8a393331dc47f73a55c79'),
+    cpuTemperature: 48.91,
+    gpuTemperature: 52.19,
+    gpuUsage: 66.81,
+    inferenceLatencyMs: 58.62,
+    packetLossPct: 0.166,
+    droppedFrames: 0,
+    profile: 'safe',
+    networkLatencyMs: 9.72,
+    status: 'healthy'
+  },
+  {
+    timestamp: ISODate('2026-10-21T11:35:46.126Z'),
+    metadata: {
+      deviceId: 'edge-001',
+      line: 'line-02',
+      site: 'factory-a'
+    },
+    fps: 18,
+    memoryUsage: 55.44,
+    cpuUsage: 36.62,
+    _id: ObjectId('6ad8a392331dc47f73a55c78'),
+    cpuTemperature: 50.13,
+    gpuTemperature: 54.09,
+    gpuUsage: 68.42,
+    inferenceLatencyMs: 59.28,
+    packetLossPct: 0.277,
+    droppedFrames: 0,
+    profile: 'safe',
+    networkLatencyMs: 9.78,
+    status: 'healthy'
+  }
+]

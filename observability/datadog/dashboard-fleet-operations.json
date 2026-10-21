@@ -1,6 +1,6 @@
 {
   "title": "EdgeGuard Fleet Operations",
-  "description": "Detect → Investigate → Respond → Verify for thermal throttling on edge camera fleets. Reproducible from repo via scripts/datadog-apply.ps1.",
+  "description": "Detect to Verify for thermal throttling on edge camera fleets. Logs list queries service:edgeguard-ops (Agent file-tail). No device_id template variable: file-tail logs are not tagged device_id, and * would hide them.",
   "widgets": [
     {
       "definition": {
@@ -36,14 +36,14 @@
           {
             "value": "y = 100",
             "display_type": "warning dashed",
-            "label": "latency threshold"
+            "label": "latency threshold 100ms"
           }
         ]
       }
     },
     {
       "definition": {
-        "title": "FPS",
+        "title": "FPS (safe mode recovery is not 30 FPS)",
         "type": "timeseries",
         "requests": [
           {
@@ -55,7 +55,7 @@
     },
     {
       "definition": {
-        "title": "Packet loss % (network contrast)",
+        "title": "Packet loss percent (network contrast)",
         "type": "timeseries",
         "requests": [
           {
@@ -91,35 +91,56 @@
     },
     {
       "definition": {
-        "title": "Incident / remediation logs",
+        "title": "Incident and remediation logs",
         "type": "list_stream",
         "requests": [
           {
+            "response_format": "event_list",
+            "query": {
+              "data_source": "logs_stream",
+              "query_string": "service:edgeguard-ops (\"Incident RESOLVED\" OR \"Remediation applied\" OR \"Incident entered RECOVERING\")"
+            },
             "columns": [
               { "field": "timestamp", "width": "auto" },
               { "field": "service", "width": "compact" },
               { "field": "content", "width": "full" }
-            ],
-            "query": {
-              "data_source": "logs_stream",
-              "query_string": "service:(edgeguard-telemetry-api OR edgeguard-health-analyzer OR edgeguard-response-worker) (incident_id OR device_id OR action_id OR thermal OR Remediation OR RESOLVED)",
-              "indexes": ["*"]
-            },
-            "response_format": "event_list"
+            ]
           }
         ]
+      }
+    },
+    {
+      "definition": {
+        "title": "GPU now (C)",
+        "type": "query_value",
+        "requests": [
+          {
+            "q": "avg:edgeguard.device.gpu_temperature{*}",
+            "aggregator": "last"
+          }
+        ],
+        "autoscale": false,
+        "precision": 1,
+        "custom_unit": "C"
+      }
+    },
+    {
+      "definition": {
+        "title": "FPS now",
+        "type": "query_value",
+        "requests": [
+          {
+            "q": "avg:edgeguard.device.fps{*}",
+            "aggregator": "last"
+          }
+        ],
+        "autoscale": false,
+        "precision": 0
       }
     }
   ],
   "layout_type": "ordered",
   "notify_list": [],
-  "template_variables": [
-    {
-      "name": "device_id",
-      "prefix": "device_id",
-      "available_values": [],
-      "default": "*"
-    }
-  ],
+  "template_variables": [],
   "reflow_type": "auto"
 }

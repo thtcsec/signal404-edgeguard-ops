@@ -1,0 +1,84 @@
+﻿{
+    "mode":  "automatic_e2e_workers_prestarted",
+    "note":  "Device keyed by MongoDB _id. devices.profile is commanded safe profile. telemetry.profile is reported profile.",
+    "incident":  {
+                     "_id":  "inc-thermal-edge-001-20261021113510",
+                     "deviceId":  "edge-001",
+                     "status":  "RESOLVED",
+                     "type":  "thermal_throttling",
+                     "detectedAt":  "2026-10-21T11:35:10.822Z",
+                     "resolvedAt":  "2026-10-21T11:35:40.163Z",
+                     "remediationId":  "act-safe-edge-001-20261021113514"
+                 },
+    "verdict":  "PASSED",
+    "device":  {
+                   "_id":  "edge-001",
+                   "profile":  "safe",
+                   "status":  "healthy",
+                   "name":  "Edge Camera edge-001"
+               },
+    "desktop_capture":  "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\recordings\\desktop-e2e-20261021183352.mp4",
+    "assertions":  [
+                       {
+                           "detail":  "id=inc-thermal-edge-001-20261021113510",
+                           "ok":  true,
+                           "name":  "incident_present"
+                       },
+                       {
+                           "detail":  "status=RESOLVED",
+                           "ok":  true,
+                           "name":  "incident_resolved"
+                       },
+                       {
+                           "detail":  "state=VERIFIED",
+                           "ok":  true,
+                           "name":  "remediation_verified"
+                       },
+                       {
+                           "detail":  "_id=edge-001",
+                           "ok":  true,
+                           "name":  "device_found_by_id"
+                       },
+                       {
+                           "detail":  "profile=safe status=healthy",
+                           "ok":  true,
+                           "name":  "device_profile_safe"
+                       },
+                       {
+                           "detail":  "profile=safe status=healthy",
+                           "ok":  true,
+                           "name":  "telemetry_profile_safe"
+                       },
+                       {
+                           "detail":  "age_s=1.6 gpu=53.99 fps=18",
+                           "ok":  true,
+                           "name":  "telemetry_fresh"
+                       },
+                       {
+                           "detail":  "scanned api/analyzer/worker logs",
+                           "ok":  true,
+                           "name":  "no_fatal_service_exceptions"
+                       }
+                   ],
+    "mongo_snapshot":  "D:\\tu_projects\\signal404-edgeguard-ops\\docs\\video\\recordings\\mongo-snapshot-20261021183352.txt",
+    "remediation":  {
+                        "_id":  "act-safe-edge-001-20261021113514",
+                        "incidentId":  "inc-thermal-edge-001-20261021113510",
+                        "deviceId":  "edge-001",
+                        "state":  "VERIFIED",
+                        "actionType":  "SWITCH_TO_SAFE_PROFILE",
+                        "requestedAt":  "2026-10-21T11:35:14.897Z",
+                        "completedAt":  "2026-10-21T11:35:40.174Z"
+                    },
+    "run_id":  "20261021183352",
+    "captured_at_utc":  "2026-10-21T11:35:51.0408746Z",
+    "latest_telemetry":  {
+                             "timestamp":  "2026-10-21T11:35:49.197Z",
+                             "profile":  "safe",
+                             "status":  "healthy",
+                             "gpuTemperature":  53.99,
+                             "fps":  18,
+                             "inferenceLatencyMs":  57.84,
+                             "deviceId":  "edge-001"
+                         }
+}

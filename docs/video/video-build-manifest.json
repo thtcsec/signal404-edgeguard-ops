@@ -1,38 +1,41 @@
 {
   "output": "docs/video/edgeguard-ops-final-demo.mp4",
-  "kind": "real_application_demo",
-  "duration_seconds": 165.071995,
-  "size_bytes": 13103343,
+  "kind": "silent_real_application_demo",
+  "e2e_run_id": "20261021183352",
+  "incident_id": "inc-thermal-edge-001-20261021113510",
+  "duration_seconds": 72.0,
+  "size_bytes": 3252662,
   "video_codec": "h264",
   "audio_codec": "aac",
+  "audio_note": "silent AAC (anullsrc) \u2014 no TTS, no voiceover",
   "width": 1920,
   "height": 1080,
   "fps": 30,
-  "tts_engine": "edge-tts",
-  "tts_voice": "vi-VN-NamMinhNeural",
-  "tts_fallback_used": false,
-  "voice_consistency": "single_engine_single_voice_entire_track",
-  "footage_sources": {
-    "datadog_dashboard_video": "docs/video/recordings/dd-final-2.mp4",
-    "datadog_dashboard_still": "docs/video/recordings/still-dashboard.png",
-    "datadog_monitor_still": "docs/video/recordings/still-monitor.png",
-    "terminal_evidence": "docs/video/recordings/terminal-evidence-20261019215511.mp4"
-  },
-  "incident_run": {
-    "id": "inc-thermal-edge-001-20261019144446",
-    "mode": "automatic_e2e_workers_prestarted",
-    "evidence": "docs/evidence/e2e-app-demo-20261019214254.json",
-    "remediation": "act-safe-edge-001-20261019144450",
-    "final": "RESOLVED / VERIFIED"
-  },
-  "disclosures": [
-    "Telemetry is synthetic and labeled on-screen.",
-    "This primary sequence is the automatic E2E run (workers pre-started).",
-    "Monitor ALERT may be brief/absent vs staged-delay demo; monitor UI shows OK after recovery.",
-    "Staged Alert demo (delayed worker) is a separate historical validation — not spliced as one continuous run.",
-    "Safe-mode FPS ≈ 18 — not a claim of 30 FPS restoration.",
-    "111.4s staged interval is NOT used as autonomous MTTA in this video."
-  ],
+  "tts_engine": null,
+  "voiceover": false,
+  "subtitles_burned_in": false,
   "duration_ok": true,
-  "slideshow_backup": "docs/video/edgeguard-ops-final-demo.slideshow-backup.mp4"
+  "padded": false,
+  "structure": [
+    "Inject Fault",
+    "Detect",
+    "Respond",
+    "Verify"
+  ],
+  "sources": {
+    "simulator_conhost": "docs/video/recordings/conhost-sim-start.mp4",
+    "dashboard_video": "docs/video/recordings/dd-final-loaded.mp4",
+    "mongo_conhost": "docs/video/recordings/conhost-mongo-verify.mp4"
+  },
+  "excluded_sources": [
+    "desktop-e2e-*.mp4 (unrelated desktop apps)",
+    "dd-live-loaded.mp4 (gdigrab captured foreground YouTube)",
+    "terminal-evidence-mongo.mp4 (HTML dump, replaced by conhost)",
+    "monitor Event Timeline 18:29 ALERT (prior same-day attempt, not E2E 18:35)"
+  ],
+  "recording_notes": [
+    "OBS Studio is not installed on this machine.",
+    "Windows Terminal title-grab records a black frame; classic conhost.exe GDI grab is used.",
+    "Simulator recapture is a live start of THERMAL_THROTTLE; commanded profile is still safe from E2E so GPU stays ~54C. Datadog graphs are the 18:35 E2E, not this recapture."
+  ]
 }
