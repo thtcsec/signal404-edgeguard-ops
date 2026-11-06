@@ -14,7 +14,7 @@ Transparency for MUGVN Hackathon 2026 judges and organizers. AI coding tools are
 
 Functional Detect → Remediate → Verify and Datadog live wiring were implemented **during** the official build window (commits from `1dffaf6` onward; Datadog live hardening `b0a5b35`).
 
-## AI tools used during the build window
+## AI tools used during the original build window
 
 | Tool | Use |
 | --- | --- |
@@ -43,3 +43,7 @@ Architecture choices (polling vs change streams, commanded vs reported profile, 
 - No vendor sample apps copied wholesale.
 - No prior production IoT codebase.
 - No undisclosed private datasets.
+
+## November 6 final-submission hardening
+
+Codex assisted source/evidence review, targeted reliability fixes and tests, secret-pattern scanning, video metadata/frame verification, and submission documentation. No new AI runtime agent was added to the product. The original scaffold and October evidence remain separate historical records. The current submission deadline is November 8, 2026, 23:59 ICT; the October build dates above describe the original implementation period. Human team review and submission approval remain required.

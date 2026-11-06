@@ -1,120 +1,36 @@
-# EdgeGuard Ops — Hackathon submission overview
+# EdgeGuard Ops — final submission overview
 
-**Team:** Signal404  
-**Project:** EdgeGuard Ops  
-**Competition:** MUGVN Hackathon 2026 — Real-time Operations (MongoDB + Datadog)  
-**Baseline commit:** `b0a5b35`  
-**Deadline:** 2026-10-31 23:59 ICT  
+**Team:** Signal404 · **Deadline:** November 8, 2026, 23:59 ICT. Confirmed read-only on the [official form](https://docs.google.com/forms/d/e/1FAIpQLSd31MPvuUw_e2fZQFmMd-m_RrGyVSJJte_-5ctpAu_LRYap5A/viewform), November 6.
 
-## One-sentence pitch
+**Monitoring detects the problem. EdgeGuard acts on it and verifies recovery.**
 
-EdgeGuard Ops detects thermal throttling on edge AI cameras from MongoDB time-series telemetry, remediates with a commanded safe profile, and proves recovery in Datadog — Detect → Investigate → Respond → Verify.
+Edge AI camera thermal throttling can resemble a network problem. EdgeGuard combines GPU/latency/FPS and calm-network telemetry, commands safe mode automatically, and requires fresh, continuous healthy reported-safe telemetry before declaring recovery.
 
-## Problem
+The [automatic walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md) anchors the submission in run `20261021202014`: RESOLVED / VERIFIED / safe, with a captured 54.73°C / 18 FPS sample. Single-run synthetic detection→request 4.713 s and detection→resolved 29.824 s are observations, not production performance guarantees. Safe mode deliberately reduces throughput.
 
-Edge cameras and inference nodes emit continuous telemetry, but operators often learn about thermal throttling only after FPS collapses and frames drop. Network-looking symptoms can mask a thermal root cause. Teams need a closed loop: store high-cardinality device telemetry, detect trends early, act safely, and prove the fleet is healthy again.
+MongoDB 8 is the self-managed operational store: time-series + 14-day default TTL, per-device window aggregation, devices, incidents, actions and recovery queries. Datadog supplies metrics, dashboard, structured investigation logs, monitor definitions and cloud-verified telemetry-api APM. Application workers perform detection and remediation; Datadog does not trigger this control loop. See [architecture](ARCHITECTURE.md) and [observability](OBSERVABILITY.md).
 
-## Solution
+Evidence sets remain distinct:
 
-A .NET 9 + MongoDB + Datadog stack with a Python synthetic fleet simulator:
+- October 18 staged demo: delayed worker start for monitor ALERT→OK; 111.4 s includes that delay. [Historical measurements](evidence/performance-metrics.json).
+- October 21 automatic run `20261021183352`: separate preserved execution.
+- October 21 automatic run `20261021202014`: primary recorded E2E, paused Datadog historical graphs and ID-correlated logs. No monitor transition claimed for this run.
 
-1. **Detect** — Health analyzer polls MongoDB and uses `$setWindowFields` to compare short vs trailing windows (GPU temp, latency, FPS) while checking that packet loss / network latency stay calm.
-2. **Investigate** — Incidents store evidence snapshots and root-cause text; Datadog metrics/logs correlate the same `device_id` / `incident_id`.
-3. **Respond** — Response worker polls active incidents, atomically sets `commanded_profile=safe`, and records a remediation action.
-4. **Verify** — Recovery requires continuous healthy **reported**-safe telemetry in an observation window (stall/gap resets evidence). Datadog demo monitor returns ALERT → OK when GPU cools.
+## Review package
 
-## Why MongoDB is necessary (not decorative)
+- [Exact form content](submission/MUGVN2026_FORM_CONTENT.md)
+- [Final checklist](submission/MUGVN2026_FINAL_SUBMISSION_CHECKLIST.md)
+- [Judge Q&A](submission/MUGVN2026_JUDGE_QA.md)
+- [Release report and verification](submission/MUGVN2026_RELEASE_REPORT.md)
+- [Current editable PPTX](presentation/EdgeGuard-Ops-Submission-20261106.pptx)
+- [Current editable slide content](presentation/SLIDES.md)
+- [Final video audit](submission/MUGVN2026_VIDEO_AUDIT.md)
+- [Non-destructive run instructions](../README.md#run-locally)
 
-| Capability | Role |
-| --- | --- |
-| Time-series collection (`timestamp` + `metadata`, TTL) | Efficient ingest and retention for per-device samples |
-| `$setWindowFields` aggregations | Trend detection without exporting all raw series elsewhere |
-| Devices / incidents / remediation collections | Operational state machine for commanded profile and recovery |
-| Atomic `$set` on status/profile | Avoid concurrent overwrite of commanded profile during ingest |
+Repository: [thtcsec/signal404-edgeguard-ops](https://github.com/thtcsec/signal404-edgeguard-ops), **private** (authenticated GitHub CLI check November 6). It is not anonymously readable. Demo: `[HOSTED_VIDEO_URL_PENDING]`. Architecture and screenshots also need judge-readable URLs after authorized publication/access setup. Do not submit placeholders.
 
-Without MongoDB as the system of record, remediations cannot be verified against the same telemetry used for detection.
+## Limits and disclosure
 
-## Why Datadog is necessary (not decorative)
+Synthetic telemetry only, no physical camera integration, no production ROI, no fleet-scale latency benchmark, no propagated end-to-end distributed trace. Cloud APM verified for telemetry-api only. Supported topology is one analyzer and one response worker; no distributed exactly-once guarantee. No public unauthenticated deployment is intended.
 
-| Capability | Role |
-| --- | --- |
-| DogStatsD metrics | Fleet GPU / latency / FPS / active incidents on one timeline |
-| Dashboard | Investigate thermal vs network during the demo |
-| Monitor (demo + production definitions) | Operator-visible ALERT → OK for the same incident |
-| Structured logs | Search `device_id` / `incident_id` / `action_id` |
-| APM (Bundle + TCP to Agent) | Prove ingest path is instrumented (see limitations) |
-
-Datadog is the operator lens; MongoDB is the control-plane truth. Both are required for the Detect→Verify story judges expect.
-
-## Architecture (accurate)
-
-```text
-Simulator → Telemetry API → MongoDB time-series
-                ↓                    ↓
-           DogStatsD/logs      Health Analyzer (poll + $setWindowFields)
-                ↓                    ↓
-           Datadog Agent        Incidents
-                                    ↓
-                             Response Worker (poll)
-                                    ↓
-                           commanded_profile=safe
-                                    ↓
-                     continuous recovery evidence → RESOLVED
-```
-
-**Not used:** Kafka, Kubernetes, custom frontend, AI agent, change streams (polling is intentional and implemented).
-
-## Implementation status
-
-### Implemented and tested
-
-- Telemetry ingest; commanded vs reported profile
-- Thermal detection via `$setWindowFields`
-- Polling remediation + continuous recovery evidence (including stall reset)
-- Unit tests: 9 .NET + 6 Python (passing at baseline)
-- Datadog Agent Compose profile, DogStatsD, file-tail logs, dashboard/monitor JSON, apply script
-
-### Observed in live Datadog org (2026-10-18)
-
-Evidence: [evidence/live-datadog-validation.json](evidence/live-datadog-validation.json), [evidence/performance-metrics.json](evidence/performance-metrics.json)
-
-- Metrics: `edgeguard.device.gpu_temperature`, `fps`, `inference_latency`
-- Logs: remediation / RESOLVED lines; `service:edgeguard-ops`
-- Demo monitor ALERT → OK
-- Dashboard applied: https://app.datadoghq.com/dashboard/9rr-a4u-2st  
-- Monitor: https://app.datadoghq.com/monitors/333934695  
-- APM service list: **`edgeguard-telemetry-api` only** (verified)
-- E2E incident `inc-thermal-edge-001-20261018085058` → `RESOLVED` / remediation `VERIFIED`
-
-### Limitations (do not over-claim)
-
-- Telemetry is **synthetic**
-- **40.9 s** detection clock = first stored sample → detect (not anomaly-onset)
-- Live ALERT demo used **delayed response-worker start** (**111.4 s** detect→remediate includes that delay) — not pure autonomous MTTA
-- Post-recovery FPS ≈ **18** is safe-mode trade-off — **not** full ~30 FPS restoration
-- APM cloud verification for **health-analyzer** and **response-worker**: **NOT VERIFIED** (same Bundle wiring; only API service confirmed in Datadog services API)
-- No single distributed trace across poll processes (correlation by IDs)
-- Transitive NuGet advisories on MongoDB stack (`SharpCompress`, `Snappier`) — classified in checklist
-
-## Demo instructions
-
-See [DEMO.md](DEMO.md), [RECORDING_SEQUENCE.md](RECORDING_SEQUENCE.md), [DEMO_STORYBOARD.md](DEMO_STORYBOARD.md), [DEMO_REHEARSAL.md](DEMO_REHEARSAL.md), [VIDEO_CAPTURE_CHECKLIST.md](VIDEO_CAPTURE_CHECKLIST.md), [presentation/EdgeGuard-Ops-Judge-Deck.pptx](presentation/EdgeGuard-Ops-Judge-Deck.pptx).
-
-## Disclosure
-
-Pre-window scaffold: [PRE_HACKATHON_BASELINE.md](PRE_HACKATHON_BASELINE.md)  
-AI / reuse: [AI_AND_REUSE_DISCLOSURE.md](AI_AND_REUSE_DISCLOSURE.md)
-
-## Official brief (from public organizer materials)
-
-Build a useful MongoDB-powered app; use Datadog to observe, detect, investigate, and resolve an operational challenge end-to-end (incident → recovery). MongoDB expectations include time-series, aggregations/window functions, TTL. Datadog expectations include dashboard + monitor/alert plus at least one of logs / APM / tracing / related Agent capabilities. AI tools allowed if declared. Teams 1–3.
-
-**Finals scoring (official public):** Creativity 30% · Technical 30% · Impact 30% · Presentation 10%.
-
-**Human compliance (mandatory):**
-
-1. Confirm final submission form + any video-duration restrictions on the organizer portal.  
-2. Grant judge read access to this **private** repo using accounts supplied by organizers.  
-3. Keep access through **2026-11-22**.  
-4. Submit before **2026-10-31 23:59 ICT**.  
-5. Do **not** modify the repository after the deadline.
+Pre-window scaffold and original October build dates remain in [historical baseline](PRE_HACKATHON_BASELINE.md). [AI/reuse disclosure](AI_AND_REUSE_DISCLOSURE.md) includes this November hardening pass. Maintain access for judges through November 22 as recorded in prior team compliance notes; reconfirm organizer account list and retention instructions. Technical evaluation November 9–12, Top 8 November 13, online final November 15 are team-supplied organizer-email dates; this review found no matching email in the connected mailbox.

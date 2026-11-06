@@ -4,7 +4,11 @@
 
 Factories running edge AI cameras lose inspection yield when GPU thermal throttling silently cuts FPS. EdgeGuard Ops shortens the path from “device looks slow” to “safe profile commanded and verified healthy,” with Datadog giving operators a shared timeline.
 
-## What we measured (synthetic lab run — 2026-10-18)
+## Primary automatic observation — October 21
+
+Run `20261021202014`: detection→request **4.713 s**, detection→resolved **29.824 s**; captured final safe/healthy sample **54.73°C / 18 FPS / 60.9 ms**. These are single-run synthetic observations, not production latency benchmarks or before/after window averages. See the [evidence walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md).
+
+## Historical staged measurement (synthetic lab run — 2026-10-18)
 
 Source incident: `inc-thermal-edge-001-20261018085058`  
 Full methodology: [evidence/performance-metrics.json](evidence/performance-metrics.json)
@@ -35,7 +39,7 @@ Full methodology: [evidence/performance-metrics.json](evidence/performance-metri
 - Synthetic data only (labeled on slides and in narration).
 - Single-device demo path for judges (simulator supports multi-device).
 - Polling-based workers (no change streams yet) — latency floor includes poll intervals.
-- Staged Alert path delays worker start so judges can see ALERT; automatic E2E (all workers up) is documented separately in [RECORDING_SEQUENCE.md](RECORDING_SEQUENCE.md).
+- Staged Alert path delays worker start so judges can see ALERT; automatic E2E (all workers up) is verified separately in the [walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md).
 
 ## Measurable outcomes suitable for slides
 

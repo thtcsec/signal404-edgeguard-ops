@@ -1,53 +1,40 @@
-# Architecture
+# Implemented architecture
 
-EdgeGuard Ops is a single-developer system: one ingest API, two workers, one database, one simulator, and Datadog as the operator view. This document describes the target. The scaffold only contains the process boundaries and contracts.
+Current implementation, reviewed November 6, 2026. The September scaffold is preserved separately in [PRE_HACKATHON_BASELINE.md](PRE_HACKATHON_BASELINE.md).
 
-## Runtime pieces
+```mermaid
+flowchart TD
+    S[Python synthetic simulator] -->|POST /telemetry| A[ASP.NET Core 9 API]
+    A --> T[(MongoDB telemetry time-series)]
+    A --> D[(devices: commanded profile)]
+    S -->|GET /devices/deviceId| A
+    T --> H[Health Analyzer: polling + $setWindowFields]
+    H --> I[(incidents)]
+    I --> W[Response Worker: polling]
+    W -->|atomic profile field update| D
+    W --> R[(remediation_actions)]
+    T -->|reported-safe samples| W
+    W -->|verified recovery| I
+    A -. DogStatsD / logs / verified API APM .-> DD[Datadog Agent / cloud]
+    H -. metrics / logs .-> DD
+    W -. metrics / logs .-> DD
+```
 
-| Piece | Technology | Scaffold behavior |
+| Component | Actual behavior | Source |
 | --- | --- | --- |
-| Device simulator | Python 3.11 | Exits without sending samples |
-| Telemetry API | ASP.NET Core 9 | Health check and HTTP 501 ingest |
-| Health analyzer | .NET worker | Logs and idles |
-| Response worker | .NET worker | Logs and idles |
-| Operational store | MongoDB 8 | Container only; no collections are created |
-| Observability | Datadog | Documented integration points; disabled in configuration |
+| Simulator | Posts synthetic samples; polls commanded profile and applies safe mode | `apps/device-simulator/src/edgeguard_simulator/` |
+| API | Initializes MongoDB; health/ping, device lookup, ingest; returns HTTP 202 for accepted data | `services/telemetry-api/Program.cs` |
+| MongoDB | Time-series with timestamp/metadata, seconds granularity, default 14-day TTL; devices, incidents, actions and indexes | `shared/EdgeGuard.Shared/Persistence/EdgeGuardMongoContext.cs` |
+| Analyzer | Per-device trailing 1/5-minute averages; thermal thresholds and calm network; prevents a second active incident in sequential processing | `services/health-analyzer/FleetThermalHealthAnalyzer.cs` |
+| Worker | OPEN → MITIGATING → RECOVERING → RESOLVED; actions REQUESTED → APPLIED → VERIFIED | `services/response-worker/SafeProfileRemediationExecutor.cs` |
+| Datadog | DogStatsD, JSON file-tail logs, dashboard/monitors; profiler APM cloud-verified only for telemetry-api | `observability/datadog/`, [OBSERVABILITY.md](OBSERVABILITY.md) |
 
-## Planned request path
+Detection accepts an absolute hot-temperature threshold or a rise vs trailing baseline, plus latency/FPS degradation and calm network. The short recorded run does not fill a five-minute baseline: do not describe its equal 1/5-minute averages as a measured long-baseline trend.
 
-```text
-POST /telemetry
-    -> Telemetry API
-    -> validation
-    -> TelemetryRepository.insert
-    -> MongoDB time-series collection
-```
+`devices.profile` is commanded state; `telemetry.profile` is reported state. Ingest updates an existing device's status with `$set` and does not replace its commanded profile. A command alone never resolves an incident. Recovery requires healthy reported-safe samples spanning the configured observation window (20 s default), GPU ≤75°C, latency ≤80 ms, FPS ≥18, at least 3 samples, latest age ≤5 s and inter-sample gaps ≤5 s. Stalls/gaps reset the in-memory observation clock; worker restart starts a new clock. Future-dated samples cannot prove recovery.
 
-Trace activity names reserved for that path are `POST /telemetry` and `TelemetryRepository.insert` (`EdgeGuard.Shared.Observability.TraceSources`). The API does not start those activities yet.
+Sequential retry hardening uses a stable action ID per incident and preserves existing action records on duplicate insert. Action verification is written before incident resolution; missing/mismatched actions or failed verification writes leave the incident unresolved. There is no cross-document transaction: a crash can leave VERIFIED with RECOVERING until retry. No distributed lease or multi-worker exactly-once guarantee is claimed. Historical action IDs are unchanged.
 
-## Planned detection and response path
+MongoDB is self-managed via Compose, not Atlas. Workers poll; change streams are not used. API and workers have distinct processes and correlate by IDs, without a single propagated distributed trace. Default Compose starts MongoDB; `apps` and `datadog` are optional profiles. Host ports bind loopback. The lab API has no device authentication; do not expose it publicly.
 
-```text
-HealthAnalyzer.analyze
-    -> aggregation + $setWindowFields
-    -> IncidentRepository.insert
-    -> incidents collection
-    -> change stream
-    -> RemediationExecutor.execute
-    -> simulator profile change
-    -> recovery samples
-```
-
-The analyzer does not call `IFleetHealthAnalyzer.AnalyzeAsync`, because the registered implementation is a placeholder that throws. The response worker likewise does not call `IRemediationExecutor`.
-
-## Why these boundaries
-
-The incident story needs a writer (simulator and API), a store (MongoDB), a decision loop (analyzer), an action loop (response worker), and an outside view (Datadog). Splitting those four code projects keeps the demo explainable without a message bus. The simulator posts HTTP directly to the API. Workers read and write MongoDB. Datadog receives metrics, logs, and traces from the same processes.
-
-## Configuration
-
-`MongoDb` and `Observability` sections are the shared configuration objects. Defaults target local MongoDB and set `DatadogEnabled` to false. Environment variables use the ASP.NET `__` form, for example `MongoDb__ConnectionString`.
-
-## Deployment shape for the hackathon
-
-`docker compose up` starts MongoDB only. API and workers are in the Compose profile `apps` so a later image build does not become the default path. Kubernetes is out of scope.
+Configuration uses .NET `Section__Key` variables. Datadog defaults disabled. See README for non-destructive local review and [walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md) for exact evidence.

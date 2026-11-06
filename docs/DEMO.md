@@ -1,5 +1,7 @@
 # EdgeGuard Ops demo runbook
 
+Current submission: [automatic October 21 walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md), [80.1 s video audit](submission/MUGVN2026_VIDEO_AUDIT.md), [non-destructive local review](../README.md#run-locally). October 18 staged monitor evidence below remains historical and separate. Application workers make the automated decisions; Datadog is the operator view.
+
 Detect → Investigate → Respond → Verify Recovery using synthetic telemetry only.
 
 ## Verification status

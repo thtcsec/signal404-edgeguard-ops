@@ -1,5 +1,7 @@
 # Observability
 
+Current submission: [automatic October 21 walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md), [80.1 s video audit](submission/MUGVN2026_VIDEO_AUDIT.md), [non-destructive local review](../README.md#run-locally). October 18 staged monitor evidence below remains historical and separate. Application workers make the automated decisions; Datadog is the operator view.
+
 ## Implementation vs live verification
 
 - **Implemented:** DogStatsD `IOperationalTelemetry`, optional Datadog Agent Compose profile, JSON console + **file** logs under `Observability:LogDirectory` (Agent file-tail), `Datadog.Trace.Bundle` automatic instrumentation (CORECLR profiler via `scripts/enable-datadog-dotnet-apm.ps1` or Dockerfiles), reproducible dashboard/monitor JSON, idempotent `scripts/datadog-apply.ps1` (loads `.env`).
@@ -37,7 +39,7 @@ Demo runs .NET on the Windows host. Container log collection stays off. Instead:
 
 ## Traces (.NET automatic instrumentation)
 
-Package: `Datadog.Trace.Bundle` (≥ 3.55.1; patched for CVE-2026-50273 / former NU1903 on &lt; 3.43.0).
+Package pinned in source: `Datadog.Trace.Bundle` 3.55.1. Current dependency advisory results are in the [release report](submission/MUGVN2026_RELEASE_REPORT.md); a package version alone is not a security guarantee.
 
 `ActivitySource` name: `EdgeGuard.Ops` with spans such as `POST /telemetry`, `HealthAnalyzer.analyze`, `RemediationExecutor.execute`.
 

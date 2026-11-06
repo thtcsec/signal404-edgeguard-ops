@@ -1,31 +1,9 @@
-# EdgeGuard Ops — demo video (local deliverable)
+# Final video
 
-## Submission file (local)
+Current local deliverable: `docs/video/edgeguard-ops-final-demo.mp4` — 80.1 seconds, 1920×1080 H.264 at 30 fps, silent AAC, burned English captions. The MP4 and backups are gitignored. Preserve the final file; do not rebuild it for submission.
 
-| Artifact | Path |
-| --- | --- |
-| **Final MP4** | `docs/video/edgeguard-ops-final-demo.mp4` |
-| Subtitles | `docs/video/edgeguard-ops-subtitles.srt` |
-| Voice-over WAV | `docs/video/voiceover-vi.wav` |
-| Build manifest | `docs/video/video-build-manifest.json` |
-| Preview frames | `docs/video/preview-frames/` |
-| Datadog graph captures | `docs/video/captures/` |
+[Audit and SHA-256](../submission/MUGVN2026_VIDEO_AUDIT.md) · [manifest](video-build-manifest.json) · [subtitles](edgeguard-ops-subtitles.srt)
 
-Large MP4 / WAV / scene intermediates are **gitignored**. Rebuild locally before upload:
+Primary run: `20261021202014`. Paused Datadog graphs/logs are from its historical window. The October 18 graph snapshots in `captures/` and previous voiced/slideshow builds are historical alternatives, not sources to substitute for this final cut. The 90-second prior edit is a separate local backup.
 
-```powershell
-python scripts/fetch-datadog-captures.py   # optional authentic historical graphs
-python scripts/build-demo-video.py
-```
-
-## Evidence policy
-
-- Datadog graphs in `captures/` come from the **Datadog graph snapshot API** for the verified incident window (`2026-10-18 08:48–08:55 UTC`).
-- Monitor UI Alert/OK screenshots require an authenticated browser session; if absent, the video uses **labeled** status cards + MongoDB evidence (never fabricated dashboards).
-- Narration explicitly discloses the **staged Alert** (delayed response-worker) and that **111.4s ≠ autonomous MTTA**.
-- All telemetry is labeled **SYNTHETIC**.
-
-## Voice-over
-
-Primary: `edge-tts` voice `vi-VN-NamMinhNeural`  
-Fallback: `gTTS` (`lang=vi`) when edge-tts returns no audio.
+Hosted video URL: `[PENDING_UPLOAD_AND_ACCESS_CHECK]`. No upload or repository publication is authorized by the hardening task.

@@ -1,129 +1,103 @@
-# EdgeGuard Ops
+# EdgeGuard Ops · Signal404
 
-**Signal404** · real-time observability and automated incident response for IoT and edge AI device fleets.
+**Monitoring detects the problem. EdgeGuard acts on it and verifies recovery.**
 
-> Current status: Official build window (17/10 → 31/10). Core Detect → Investigate → Respond → Verify loop is implemented against MongoDB. Datadog integration is wired in-repo (DogStatsD, host log file-tail, .NET APM Bundle) and optional (`Observability__DatadogEnabled=false` by default). Live Datadog org validation is a separate step requiring credentials.
+Thermal throttling can cut an edge AI camera's processing rate while its network still looks healthy. EdgeGuard detects the thermal pattern, automatically commands a safe processing profile, and waits for fresh, continuous healthy **reported-safe** telemetry before declaring recovery.
 
-## Problem
+**Recorded automatic synthetic E2E:** `20261021202014` → incident **RESOLVED**, remediation **VERIFIED**, device **safe**; final captured sample **54.73°C / 18 FPS**. Detection → request **4.713 s**; detection → resolution **29.824 s**. These are single-run synthetic observations, not production benchmarks. Safe mode trades peak throughput for thermal headroom.
 
-Edge cameras and inference nodes report continuously, and operators still find thermal throttling or link degradation after frames are already dropping. EdgeGuard Ops stores that telemetry in MongoDB, surfaces fleet health in Datadog when enabled, and walks one incident from detection through a safe-profile response and a verified recovery.
+**Demo video:** `[HOSTED_VIDEO_URL — pending upload and access check]` · local final: `docs/video/edgeguard-ops-final-demo.mp4` (80.1 s, silent English captions).
 
-## Architecture
-
-```text
-IoT device simulator
-        |
-        v
-Telemetry API  --------------------->  Datadog (optional)
-        |                              DogStatsD / logs / APM
-        v
-MongoDB Time Series
-        |
-        v
-Health Analyzer (poll)
-        |
-        v
-Incident collection
-        |
-        v
-Response worker (poll)
-        |
-        v
-Safe-profile remediation + recovery evidence
+```mermaid
+flowchart LR
+    S[Python synthetic cameras] --> A[ASP.NET telemetry API]
+    A --> M[(MongoDB time-series + TTL)]
+    M --> H[Health Analyzer: window aggregation]
+    H --> I[(Incidents)]
+    I --> W[Response Worker: poll]
+    W --> D[(Device commanded profile: safe)]
+    D --> A
+    A --> S
+    M --> W
+    W --> R[Continuous reported-safe evidence → VERIFIED / RESOLVED]
+    A -. metrics / logs / API APM .-> DD[Datadog Agent → operator dashboard]
+    H -. metrics / logs .-> DD
+    W -. metrics / logs .-> DD
 ```
 
-Implemented path: simulator → ingest → `$setWindowFields` detection → **poll-based** remediation (not change streams) → continuous recovery evidence → `RESOLVED`. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+**MongoDB** stores telemetry with retention, computes rolling trends with `$setWindowFields`, and persists devices, incidents, actions, and recovery evidence. **Datadog** displays metrics, searchable logs, monitor behavior and verified API APM. Application workers make the automated decisions; Datadog supplies the operator view.
 
-## Hackathon
+## Review the submission
 
-MUGVN Hackathon 2026, Real-time Operations, with MongoDB and Datadog. Official build window: 2026-10-17 through 2026-10-31. Submission deadline: 2026-10-31 23:59 ICT.
+Deadline: **November 8, 2026, 23:59 ICT (UTC+7)**, confirmed on the [official submission form](https://docs.google.com/forms/d/e/1FAIpQLSd31MPvuUw_e2fZQFmMd-m_RrGyVSJJte_-5ctpAu_LRYap5A/viewform). Technical evaluation November 9–12; Top 8 November 13; online final November 15 (schedule supplied by team from organizer email).
 
-**Submission package**
-
-| Doc | Purpose |
+| Resource | Purpose |
 | --- | --- |
-| [docs/SUBMISSION.md](docs/SUBMISSION.md) | Overview for judges |
-| [docs/JUDGING_MATRIX.md](docs/JUDGING_MATRIX.md) | Creativity / Technical / Impact / Presentation map |
-| [docs/IMPACT.md](docs/IMPACT.md) | Measured synthetic outcomes + caveats |
-| [docs/FINAL_CHECKLIST.md](docs/FINAL_CHECKLIST.md) | Readiness checklist |
-| [docs/DEMO_STORYBOARD.md](docs/DEMO_STORYBOARD.md) | 3-minute storyboard |
-| [docs/DEMO_SCRIPT_VI.md](docs/DEMO_SCRIPT_VI.md) | Vietnamese narration |
-| [docs/RECORDING_SEQUENCE.md](docs/RECORDING_SEQUENCE.md) | Demo recording sequence + automatic E2E plan |
-| [docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx](docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx) | 8-slide judge deck (visual) |
-| [docs/evidence/](docs/evidence/) | Live Datadog + performance JSON |
+| [Automatic incident walkthrough](docs/submission/MUGVN2026_E2E_WALKTHROUGH.md) | Chronology, exact IDs, measurements and sources |
+| [Submission overview](docs/SUBMISSION.md) | Technical story and honest scope |
+| [Form answers](docs/submission/MUGVN2026_FORM_CONTENT.md) | Exact inspected form fields and prepared text |
+| [Final checklist](docs/submission/MUGVN2026_FINAL_SUBMISSION_CHECKLIST.md) | Remaining human actions |
+| [Judge Q&A](docs/submission/MUGVN2026_JUDGE_QA.md) | Design decisions and production limitations |
+| [Release report](docs/submission/MUGVN2026_RELEASE_REPORT.md) | Checks, access, security and verdict |
+| [Current editable PPTX](docs/presentation/EdgeGuard-Ops-Submission-20261106.pptx) | Eight-slide judge deck, automatic and staged evidence separated |
+| [Current presentation content](docs/presentation/SLIDES.md) | Editable eight-slide content |
+| [Architecture](docs/ARCHITECTURE.md) / [observability](docs/OBSERVABILITY.md) | Implementation and configuration |
+| [Claim audit](docs/submission/MUGVN2026_CLAIM_AUDIT.md) | Claim → evidence → validity → correction |
 
-Pre-existing baseline disclosure: [docs/PRE_HACKATHON_BASELINE.md](docs/PRE_HACKATHON_BASELINE.md). AI/reuse: [docs/AI_AND_REUSE_DISCLOSURE.md](docs/AI_AND_REUSE_DISCLOSURE.md).
+The October 18 staged monitor ALERT→OK, October 21 run `20261021183352`, and automatic run `20261021202014` are separate evidence sets. Only telemetry-api APM is cloud-verified. All device telemetry is synthetic; there is no camera integration or application frontend.
 
-## Stack
+## Run locally
 
-- ASP.NET Core 9 / .NET 9
-- MongoDB time-series + TTL + aggregations
-- Python 3.11+ synthetic fleet simulator
-- Docker Compose (MongoDB; optional Datadog Agent profile)
-- Datadog: DogStatsD metrics, Agent file-tail logs, `Datadog.Trace.Bundle` automatic instrumentation
+Requirements: .NET **9** SDK (`global.json`), Python 3.11+, Docker with MongoDB 8. If `dotnet` selects another SDK, use your installed .NET 9 executable (on the development machine: `$env:USERPROFILE\.dotnet\dotnet.exe`).
 
-No Kubernetes, Kafka, custom frontend, or AI agent.
-
-## Completed core functionality
-
-| Capability | Status |
-| --- | --- |
-| Telemetry ingest + commanded vs reported profile | Done |
-| Thermal incident detection (`$setWindowFields`) | Done |
-| Polling response worker + safe-profile remediation | Done |
-| Continuous recovery evidence (stall resets window) | Done |
-| Atomic device status / commanded-profile `$set` | Done |
-| E2E with Datadog disabled | Verified |
-| DogStatsD + Agent Compose + dashboard/monitor JSON | Implemented |
-| Host JSON log file-tail into Agent | Implemented |
-| .NET APM via Trace.Bundle + profiler env | Implemented (verify spans in live org) |
-| Live Datadog UI (metrics / logs / APM API / ALERT→OK) | Observed 2026-10-18 (APM: telemetry-api only) |
-
-## MongoDB usage
-
-Operational store: time-series telemetry (`timestamp` / `metadata`, granularity `seconds`, TTL), plus devices, incidents, and remediation actions. Trend detection uses aggregation + `$setWindowFields`. The response worker **polls** active incidents (change streams remain a future option, not required for the demo).
-
-## Datadog usage
-
-Repo-reproducible dashboard and monitors under `observability/datadog/`, applied with `.\scripts\datadog-apply.ps1` (loads local `.env`). Production monitor uses `avg(last_5m)` + `new_group_delay: 60`; demo monitor is separate (`monitor-thermal-gpu.demo.json`). Details: [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md), [docs/DEMO.md](docs/DEMO.md).
-
-## Incident scenario
-
-[docs/INCIDENT_SCENARIO.md](docs/INCIDENT_SCENARIO.md): thermal throttle → Datadog alert (when live) → MongoDB confirmation → safe profile → recovery → monitor OK / incident `RESOLVED`.
-
-## Layout
-
-| Path | Role |
-| --- | --- |
-| `services/telemetry-api` | `GET /health`, `POST /telemetry`, device profile API |
-| `services/health-analyzer` | Poll + `$setWindowFields` → open thermal incidents |
-| `services/response-worker` | Poll incidents → safe profile → verify → `RESOLVED` |
-| `shared/EdgeGuard.Shared` | Settings, domain, Mongo, DogStatsD, logging helpers |
-| `apps/device-simulator` | Synthetic fleet; `NORMAL` / `THERMAL_THROTTLE` / more |
-| `observability/datadog` | Dashboard + production/demo monitor JSON |
-| `scripts` | `dev-up`, `datadog-apply`, `enable-datadog-dotnet-apm` |
-| `docs` | Design, demo runbook, baseline disclosure |
-
-## Develop
-
-Requirements: .NET 9 SDK (`global.json` selects the 9.x feature band), Python 3.11+, Docker for local MongoDB.
+From repository root:
 
 ```powershell
-& "$env:USERPROFILE\.dotnet\dotnet.exe" build EdgeGuardOps.sln
-& "$env:USERPROFILE\.dotnet\dotnet.exe" test EdgeGuardOps.sln
-.\scripts\dev-up.ps1
-& "$env:USERPROFILE\.dotnet\dotnet.exe" run --project services/telemetry-api
+dotnet restore EdgeGuardOps.sln
+dotnet build EdgeGuardOps.sln -c Release
+docker compose config --quiet
+docker compose up -d mongodb
+dotnet test EdgeGuardOps.sln
+python -m pytest apps/device-simulator -q
 ```
 
-From `apps/device-simulator`:
+Open three terminals at repository root; use the same **new** database name in each to preserve existing demo data. Leave Datadog disabled for this local review.
 
 ```powershell
+$env:MongoDb__DatabaseName = "edgeguard_review_20261106"
+$env:Observability__DatadogEnabled = "false"
+dotnet run --project services/telemetry-api
+# Terminal 2: repeat environment settings, then:
+# dotnet run --project services/health-analyzer
+# Terminal 3: repeat environment settings, then:
+# dotnet run --project services/response-worker
+```
+
+In a fourth terminal:
+
+```powershell
+cd apps/device-simulator
 python -m pip install -r requirements.txt
-python -m pytest
 $env:PYTHONPATH = "src"
+$env:EDGEGUARD_TELEMETRY_URL = "http://localhost:5080"
+$env:EDGEGUARD_DEVICE_COUNT = "1"
 $env:EDGEGUARD_SCENARIO = "THERMAL_THROTTLE"
-$env:EDGEGUARD_DEVICE_COUNT = "3"
 python -m edgeguard_simulator.main
 ```
 
-Copy `.env.example` to `.env` only on your machine. Do not commit credentials. Application defaults keep Datadog disabled.
+Read-only inspection (replace database name if changed):
+
+```powershell
+Invoke-RestMethod http://localhost:5080/health
+docker compose exec mongodb mongosh edgeguard_review_20261106 --quiet --eval 'db.incidents.find().sort({detectedAt:-1}).limit(1).forEach(printjson); db.remediation_actions.find().sort({requestedAt:-1}).limit(1).forEach(printjson); printjson(db.devices.findOne({_id:"edge-001"}));'
+```
+
+The existing `scripts/verify-e2e.ps1` and recording scripts drop live collections and stop services: **do not use them against preserved demo data**. The tests use randomly named `edgeguard_test_*` databases and clean up only those fixtures. Execution status and environment constraints are recorded in the release report; these instructions are not a claim that every command ran in this review.
+
+Datadog setup: [OBSERVABILITY.md](docs/OBSERVABILITY.md). Keep API/app keys in local ignored `.env`; never put keys in form answers or judge materials. No new cloud infrastructure is required.
+
+## Scope and disclosure
+
+One analyzer and one response worker are the supported demo topology. Sequential retries are hardened; distributed exactly-once processing, authenticated device transport, durable recovery clocks, fleet-scale benchmarking and production rollout controls remain future work. Thermal vs network is a rule-based distinction, not a general root-cause classifier.
+
+[AI and reuse disclosure](docs/AI_AND_REUSE_DISCLOSURE.md) · [Historical pre-hackathon baseline](docs/PRE_HACKATHON_BASELINE.md) · [Security](docs/SECURITY.md) · [Impact](docs/IMPACT.md)

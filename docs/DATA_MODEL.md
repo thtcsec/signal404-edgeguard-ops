@@ -1,6 +1,6 @@
 # Data model
 
-Planned MongoDB design for EdgeGuard Ops. None of these collections are created by the scaffold, and none of the queries below are executed.
+Implemented MongoDB data model. Bootstrap creates the collections and indexes in `EdgeGuardMongoContext`; examples below illustrate schema, not a captured execution.
 
 Database name: `edgeguard`.
 
@@ -27,7 +27,7 @@ Regular collection. One document per fleet member. The simulator and remediation
 
 Stored profile values: `full`, `reduced`, `safe`. Status values: `healthy`, `degraded`, `offline`.
 
-Access pattern: point reads and updates by `_id`. Occasional listings by `site` and `line`. A compound index `{ site: 1, line: 1 }` is planned when the API starts listing devices.
+Access pattern: point reads and updates by `_id`. Occasional listings by `site` and `line`. Bootstrap creates compound index `{ site: 1, line: 1 }`.
 
 ## telemetry
 
@@ -67,7 +67,7 @@ expireAfterSeconds: MongoDb:TelemetryExpireAfterSeconds (default 1209600, 14 day
 
 Access pattern: append-only inserts from the telemetry API. The analyzer reads a recent window for one device or one site. Time-series indexes cover that. Measurements are not updated in place.
 
-Planned `createCollection` (not run by this scaffold):
+Equivalent telemetry bootstrap options:
 
 ```javascript
 db.createCollection("telemetry", {
@@ -112,11 +112,11 @@ OPEN -> INVESTIGATING -> MITIGATING -> RECOVERING -> RESOLVED
 
 Incident types reserved for the demo and alternate scenarios: `thermal_throttling`, `network_degradation`, `memory_pressure`.
 
-Access pattern: insert on detect, update status and root cause during investigation and response, read open incidents for the response worker and the dashboard. Planned index: `{ status: 1, detectedAt: -1 }` and `{ deviceId: 1, detectedAt: -1 }`.
+Access pattern: insert on detect, update status and root cause during investigation and response, read open incidents for the response worker and the dashboard. Bootstrap indexes: `{ status: 1, detectedAt: -1 }` and `{ deviceId: 1, detectedAt: -1 }`.
 
 ## remediation_actions
 
-Regular collection, separate from incidents so a retry is visible without rewriting history.
+Regular collection, separate from incidents. New sequential retries reuse a stable action ID per incident; historical action IDs remain unchanged.
 
 ```json
 {
@@ -140,7 +140,7 @@ Implemented in `FleetThermalHealthAnalyzer` during the official build window.
 
 ### Rolling GPU temperature and inference latency
 
-Compare the current 1-minute average with the previous 5-minute rolling average per device. `$setWindowFields` produces the 5-minute window; a `$group` or a second window covers the latest minute. A widening gap, with rising temperature and rising latency, is the thermal degradation signal.
+$setWindowFields` computes overlapping trailing 1/5-minute averages per device. Absolute GPU threshold detection also supports short startup windows. Compare the current 1-minute average with the trailing 5-minute rolling average per device. `$setWindowFields` produces the 5-minute window; a `$group` or a second window covers the latest minute. A widening gap, with rising temperature and rising latency, is the thermal degradation signal.
 
 ```javascript
 db.telemetry.aggregate([

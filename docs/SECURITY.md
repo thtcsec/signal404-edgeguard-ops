@@ -21,4 +21,8 @@ Local MongoDB in Compose has no root password. That is a development convenience
 
 ## Hackathon accounts
 
-Datadog trial credentials and any Atlas URI are build-window inputs. They are not part of this scaffold. Do not reuse an employer organization or a production API key.
+Datadog trial credentials and any Atlas URI are build-window inputs. They are local configuration, not judge artifacts. Do not reuse an employer organization or a production API key.
+
+## November 6 review boundary
+
+Compose host ports bind loopback; API errors no longer return raw exception details. The lab API has no authentication and local MongoDB has no credentials: do not expose them publicly. The focused tracked/proposed-file secret scan found no pattern matches, but is not a full-history or OCR guarantee. Transitive SharpCompress/Snappier advisories remain; see the [release report](submission/MUGVN2026_RELEASE_REPORT.md). No deployment or visibility change was performed.
