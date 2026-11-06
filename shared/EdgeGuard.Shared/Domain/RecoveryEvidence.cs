@@ -40,6 +40,11 @@ public static class RecoveryEvidence
             return new RecoveryEvaluation(false, true, "No telemetry received since observation started.");
         }
 
+        if (inWindow.Any(x => x.Timestamp > now))
+        {
+            return new RecoveryEvaluation(false, true, "Future-dated telemetry cannot prove recovery.");
+        }
+
         var latest = inWindow[^1];
         if (now - latest.Timestamp > TimeSpan.FromSeconds(maxStalenessSeconds))
         {

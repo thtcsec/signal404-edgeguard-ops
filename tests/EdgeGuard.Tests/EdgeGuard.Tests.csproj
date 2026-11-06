@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\services\telemetry-api\EdgeGuard.TelemetryApi.csproj" />
+    <ProjectReference Include="..\..\services\response-worker\EdgeGuard.ResponseWorker.csproj" />
     <ProjectReference Include="..\..\shared\EdgeGuard.Shared\EdgeGuard.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>

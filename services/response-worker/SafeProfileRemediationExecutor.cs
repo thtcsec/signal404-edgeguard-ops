@@ -98,8 +98,10 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
             return;
         }
 
-        var action = new RemediationActionRecord(
-            Id: $"act-safe-{incident.DeviceId}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
+        // Stable per incident so a partial failure can safely resume on the next poll.
+        var actionId = $"act-safe-{incident.Id}";
+        var action = await _actions.GetAsync(actionId, cancellationToken) ?? new RemediationActionRecord(
+            Id: actionId,
             IncidentId: incident.Id,
             DeviceId: incident.DeviceId,
             ActionType: RemediationActionType.SwitchToSafeProfile,
@@ -212,27 +214,30 @@ public sealed class SafeProfileRemediationExecutor : IRemediationExecutor
             return;
         }
 
+        // Do not publish RESOLVED until the linked action is durably VERIFIED.
+        // A failed action write leaves RECOVERING so the next poll can retry.
+        var action = incident.RemediationId is null
+            ? null
+            : await _actions.GetAsync(incident.RemediationId, cancellationToken);
+        if (action is null || action.IncidentId != incident.Id || action.DeviceId != incident.DeviceId)
+        {
+            _logger.LogWarning("Cannot resolve incident_id={IncidentId}: linked remediation missing or mismatched.", incident.Id);
+            return;
+        }
+
+        await _actions.UpdateAsync(action with
+        {
+            State = RemediationState.Verified,
+            CompletedAt = action.CompletedAt ?? DateTimeOffset.UtcNow
+        }, cancellationToken);
+        Activity.Current?.SetTag("action.id", action.Id);
+
         var resolved = incident with
         {
             Status = IncidentStatus.Resolved,
             ResolvedAt = DateTimeOffset.UtcNow
         };
         await _incidents.UpdateAsync(resolved, cancellationToken);
-
-        if (incident.RemediationId is not null)
-        {
-            var action = await _actions.GetAsync(incident.RemediationId, cancellationToken);
-            if (action is not null)
-            {
-                var verified = action with
-                {
-                    State = RemediationState.Verified,
-                    CompletedAt = DateTimeOffset.UtcNow
-                };
-                await _actions.UpdateAsync(verified, cancellationToken);
-                Activity.Current?.SetTag("action.id", action.Id);
-            }
-        }
 
         _recoveringSince.TryRemove(incident.Id, out _);
 

@@ -4,7 +4,7 @@ services:
   mongodb:
     image: mongo:8
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     environment:
       MONGO_INITDB_DATABASE: edgeguard
     volumes:
@@ -34,8 +34,8 @@ services:
       DD_PROCESS_AGENT_ENABLED: "false"
       DD_REMOTE_CONFIGURATION_ENABLED: "false"
     ports:
-      - "8125:8125/udp"
-      - "8126:8126"
+      - "127.0.0.1:8125:8125/udp"
+      - "127.0.0.1:8126:8126"
     volumes:
       - ./infrastructure/datadog/datadog.yaml:/etc/datadog-agent/datadog.yaml:ro
       - ./infrastructure/datadog/conf.d:/etc/datadog-agent/conf.d:ro
@@ -49,7 +49,7 @@ services:
       context: .
       dockerfile: services/telemetry-api/Dockerfile
     ports:
-      - "5080:8080"
+      - "127.0.0.1:5080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       MongoDb__ConnectionString: mongodb://mongodb:27017

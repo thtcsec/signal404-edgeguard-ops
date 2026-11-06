@@ -80,6 +80,30 @@ public sealed class RecoveryEvidenceTests
         Assert.False(result.IsRecovered);
     }
 
+    [Fact]
+    public void FutureDatedSamples_CannotProveRecovery()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var result = RecoveryEvidence.Evaluate(
+            Enumerable.Range(0, 25).Select(i => Sample(now.AddSeconds(i),
+                DeviceProfile.Safe, DeviceStatus.Healthy, 60, 40, 24)).ToList(),
+            DeviceProfile.Safe, now.AddSeconds(-20), now, 20, 5, 5, 3, 75, 80, 18);
+        Assert.False(result.IsRecovered);
+        Assert.True(result.ShouldResetObservation);
+    }
+
+    [Fact]
+    public void InternalGap_ResetsObservation_EvenWhenLatestIsFresh()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var samples = new[] { -24, -23, -2, -1, 0 }.Select(i => Sample(now.AddSeconds(i),
+            DeviceProfile.Safe, DeviceStatus.Healthy, 60, 40, 24)).ToList();
+        var result = RecoveryEvidence.Evaluate(samples, DeviceProfile.Safe,
+            now.AddSeconds(-24), now, 20, 5, 5, 3, 75, 80, 18);
+        Assert.False(result.IsRecovered);
+        Assert.True(result.ShouldResetObservation);
+    }
+
     private static TelemetryReading Sample(
         DateTimeOffset ts,
         DeviceProfile profile,

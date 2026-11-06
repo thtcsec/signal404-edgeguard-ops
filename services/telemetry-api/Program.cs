@@ -129,7 +129,6 @@ app.MapPost("/telemetry", async (
         logger.LogError(ex, "Telemetry ingest failed for device_id={DeviceId}", request.DeviceId);
         return Results.Problem(
             title: "Telemetry ingest failed",
-            detail: ex.Message,
             statusCode: StatusCodes.Status500InternalServerError);
     }
 });

@@ -218,9 +218,21 @@ public sealed class MongoRemediationActionRepository : IRemediationActionReposit
     public async Task InsertAsync(RemediationActionRecord action, CancellationToken cancellationToken)
     {
         await _context.EnsureInitializedAsync(cancellationToken);
-        await _context.RemediationActions.InsertOneAsync(
-            action.ToDocument(),
-            cancellationToken: cancellationToken);
+        try
+        {
+            await _context.RemediationActions.InsertOneAsync(
+                action.ToDocument(),
+                cancellationToken: cancellationToken);
+        }
+        catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+        {
+            // A retry must preserve the original action rather than create a second one.
+            var existing = await GetAsync(action.Id, cancellationToken);
+            if (existing is null || existing.IncidentId != action.IncidentId || existing.DeviceId != action.DeviceId)
+            {
+                throw;
+            }
+        }
     }
 
     public async Task<RemediationActionRecord?> GetAsync(string actionId, CancellationToken cancellationToken)
