@@ -17,7 +17,7 @@ There was no failed transfer: earlier instructions expressly prohibited pushing 
 
 The index was empty. Unstaged work included later validation pointers, the current checklist/report, 80.1-second SRT/manifest, editorial QA, preview replacements/deletions and video-builder edits. Untracked work included the November 6 validation JSON/report and unrelated recording scratch files. Full initial diffs/status were saved in ignored `artifacts/github-audit-20261107/`.
 
-The final November 6 validation report and JSON were not yet in **any** commit. The documentation-only reconciliation commit prepared by this audit adds them, current corrections, the verified existing SRT/manifest and the link audit. The final handoff identifies that new commit. It descends from `40ee9ee` and has an identical product/runtime tree.
+The final November 6 validation report and JSON were not yet in **any** commit. The documentation-only reconciliation commit **`f770f9618fe0de73ba1b8c9c98e791e238369a79`** (`f770f96`) adds them, current corrections, the verified existing SRT/manifest and the link audit. It descends from `40ee9ee` and has an identical product/runtime tree (`git diff 40ee9ee f770f96 -- services shared apps tests docker-compose.yml` is empty).
 
 Unrelated user editorial QA, builder and preview changes remain unstaged; other untracked recordings are excluded. Existing SRT bytes were verified and retained as-is. Historical baseline and original E2E records are preserved. No blanket add, reset, stash or history rewrite was used.
 
@@ -80,7 +80,7 @@ Product source/config/test trees in the intended publication are Git-identical t
 | Full Mongo suite/E2E today | NOT RUN | No runtime changes; Docker daemon currently unavailable; no reset attempted |
 | New live Datadog/APM/monitor validation | NOT RUN | Historical evidence only |
 
-Exact full-runtime-tested SHA: **`40ee9ee58f3a638f364850db2b5ab647b0d6b482`**. The new release commit is a documentation-only descendant with identical product code, not a newly filmed runtime.
+Exact full-runtime-tested SHA: **`40ee9ee58f3a638f364850db2b5ab647b0d6b482`**. Publication candidate HEAD: **`f770f9618fe0de73ba1b8c9c98e791e238369a79`** — documentation-only descendant with identical product code, not a newly filmed runtime.
 
 ## Security and scope
 
