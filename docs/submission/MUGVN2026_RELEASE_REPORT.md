@@ -1,5 +1,9 @@
 # Final-submission release report — November 6, 2026
 
+**November 7 access update:** repository visibility is now PUBLIC and anonymous HTTP returns 200. Older private/access findings below describe November 6, not current visibility. The audited branch and final validation artifacts remain local until approved publication; see [current GitHub audit](MUGVN2026_GITHUB_AUDIT.md). No visibility change was made by this audit.
+
+**Superseded initial-pass report.** The later [final release validation](MUGVN2026_RELEASE_VALIDATION.md) closes Docker/Mongo validation on commit `40ee9ee`: 15 .NET tests, 6 Python tests, 16 additional real-Mongo checks and automatic E2E pass. Earlier failures below describe the initial environment and are retained as history. Hosting/access blockers remain.
+
 ## A. Verdict: CONDITIONAL PASS
 
 The local package is clearer and safer, but **not READY TO SUBMIT**. Required video hosting, judge-readable private-repository/architecture/dashboard-evidence access and full Mongo-backed validation remain unresolved. No ranking or score gain is predicted.

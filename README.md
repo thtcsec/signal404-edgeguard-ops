@@ -4,28 +4,40 @@
 
 Thermal throttling can cut an edge AI camera's processing rate while its network still looks healthy. EdgeGuard detects the thermal pattern, automatically commands a safe processing profile, and waits for fresh, continuous healthy **reported-safe** telemetry before declaring recovery.
 
-**Recorded automatic synthetic E2E:** `20261021202014` → incident **RESOLVED**, remediation **VERIFIED**, device **safe**; final captured sample **54.73°C / 18 FPS**. Detection → request **4.713 s**; detection → resolution **29.824 s**. These are single-run synthetic observations, not production benchmarks. Safe mode trades peak throughput for thermal headroom.
+**Recorded October 21 automatic synthetic E2E:** `20261021202014` → incident **RESOLVED**, remediation **VERIFIED**, device **safe**; final captured sample **54.73°C / 18 FPS**. Detection → request **4.713 s**; detection → resolution **29.824 s**. These are single-run synthetic observations, not production benchmarks. Safe mode trades peak throughput for thermal headroom.
 
 **Demo video:** `[HOSTED_VIDEO_URL — pending upload and access check]` · local final: `docs/video/edgeguard-ops-final-demo.mp4` (80.1 s, silent English captions).
 
 ```mermaid
 flowchart LR
-    S[Python synthetic cameras] --> A[ASP.NET telemetry API]
-    A --> M[(MongoDB time-series + TTL)]
-    M --> H[Health Analyzer: window aggregation]
-    H --> I[(Incidents)]
-    I --> W[Response Worker: poll]
-    W --> D[(Device commanded profile: safe)]
-    D --> A
-    A --> S
-    M --> W
-    W --> R[Continuous reported-safe evidence → VERIFIED / RESOLVED]
-    A -. metrics / logs / API APM .-> DD[Datadog Agent → operator dashboard]
-    H -. metrics / logs .-> DD
-    W -. metrics / logs .-> DD
+    S[Python synthetic simulator] -->|POST reported telemetry| A[ASP.NET Core 9 API]
+    S -->|GET /devices/deviceId poll| A
+    A -->|HTTP response: commanded profile| S
+    subgraph DB[MongoDB 8: self-managed]
+        T[(telemetry: time-series + TTL)]
+        D[(devices: commanded profile)]
+        I[(incidents)]
+        R[(remediation_actions)]
+    end
+    A -->|append reported samples| T
+    A -->|create device / update status| D
+    D -->|read commanded profile| A
+    T -->|window aggregation| H[Health Analyzer: poll]
+    H -->|create OPEN incident| I
+    I -->|poll active incidents| W[Response Worker: poll]
+    W -->|set devices.profile=safe| D
+    T -->|fresh reported-safe evidence| W
+    W -->|REQUESTED / APPLIED / VERIFIED| R
+    W -->|MITIGATING / RECOVERING / RESOLVED| I
+    A -. metrics / logs / API APM .-> DG[Datadog Agent]
+    H -. metrics / logs .-> DG
+    W -. metrics / logs .-> DG
+    DG --> DD[Datadog cloud: dashboard / monitors / logs / API APM]
 ```
 
 **MongoDB** stores telemetry with retention, computes rolling trends with `$setWindowFields`, and persists devices, incidents, actions, and recovery evidence. **Datadog** displays metrics, searchable logs, monitor behavior and verified API APM. Application workers make the automated decisions; Datadog supplies the operator view.
+
+**November 6 runtime validation:** commit `40ee9ee` passes all 15 .NET tests (including four Mongo-backed tests), 6 Python tests, 16 additional Mongo retry/failure checks and a new automatic E2E. [Release decision and evidence](docs/submission/MUGVN2026_RELEASE_VALIDATION.md). The October video does **not** record this commit. The repository is public; publication of this audited release and final-video hosting remain pending. See the [November 7 GitHub audit](docs/submission/MUGVN2026_GITHUB_AUDIT.md).
 
 ## Review the submission
 
@@ -33,6 +45,7 @@ Deadline: **November 8, 2026, 23:59 ICT (UTC+7)**, confirmed on the [official su
 
 | Resource | Purpose |
 | --- | --- |
+| [Current GitHub and link audit](docs/submission/MUGVN2026_GITHUB_AUDIT.md) | Publication gap, access checks and safe handoff |
 | [Automatic incident walkthrough](docs/submission/MUGVN2026_E2E_WALKTHROUGH.md) | Chronology, exact IDs, measurements and sources |
 | [Submission overview](docs/SUBMISSION.md) | Technical story and honest scope |
 | [Form answers](docs/submission/MUGVN2026_FORM_CONTENT.md) | Exact inspected form fields and prepared text |

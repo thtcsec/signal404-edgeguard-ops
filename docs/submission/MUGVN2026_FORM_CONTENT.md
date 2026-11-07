@@ -48,7 +48,7 @@ The closed loop separates commanded device state from reported evidence. Merely 
 
 ### Link sơ đồ kiến trúc (required)
 
-[REQUIRED JUDGE-READABLE HTTPS URL — candidate after push/access: https://github.com/thtcsec/signal404-edgeguard-ops/blob/mugvn2026/submission-hardening/docs/ARCHITECTURE.md ; not currently published/access-verified]
+[REQUIRED JUDGE-READABLE HTTPS URL — candidate after approved publication: https://github.com/thtcsec/signal404-edgeguard-ops/blob/mugvn2026/submission-hardening/docs/ARCHITECTURE.md ; not currently published/access-verified]
 
 ### Mô tả kiến trúc và luồng dữ liệu (optional)
 
@@ -70,7 +70,9 @@ Automatic synthetic run 20261021202014 began healthy/full. Thermal degradation o
 
 ### Link dashboard Datadog hoặc ảnh chụp màn hình (required)
 
-[REQUIRED accessible authentic screenshot URL — pending authorized hosting. Private dashboard reference only: https://app.datadoghq.com/dashboard/9rr-a4u-2st ; not a verified public link]
+Preferred after approved release publication: https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/mugvn2026/submission-hardening/docs/submission/assets/datadog-oct21-captioned-video-frame.png — candidate only, not yet remotely available.
+
+Existing anonymously accessible historical screenshot: https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/recordings/still-dashboard.png (HTTP 200; bytes match local capture). It shows the October 21 paused window and correlated log; lower GPU-now/FPS-now widgets are capture-time live values, not recovered telemetry. Prefer the captioned video-frame crop with that distinction visible after publication. Datadog org dashboard https://app.datadoghq.com/dashboard/9rr-a4u-2st redirects anonymous users to login.
 
 ### Kết quả đo được (optional)
 
@@ -84,11 +86,11 @@ Suggested selections after team evidence review: all five listed capabilities �
 
 ### Link repository mã nguồn (required)
 
-https://github.com/thtcsec/signal404-edgeguard-ops — PRIVATE; supply organizer judge accounts with read access before submitting. Local hardening branch has not been pushed.
+https://github.com/thtcsec/signal404-edgeguard-ops — PUBLIC and anonymously accessible on November 7. It currently shows older main (639c83a). Publish the audited release only after explicit approval, then verify the exact branch/commit before submitting.
 
 ### Link README / hướng dẫn cài đặt (required)
 
-[After authorized push and access setup] https://github.com/thtcsec/signal404-edgeguard-ops/blob/mugvn2026/submission-hardening/README.md — candidate only; branch is local now.
+[After authorized push and artifact verification] https://github.com/thtcsec/signal404-edgeguard-ops/blob/mugvn2026/submission-hardening/README.md — candidate only; branch is local now.
 
 ### Link video demo (required)
 
@@ -96,7 +98,7 @@ https://github.com/thtcsec/signal404-edgeguard-ops — PRIVATE; supply organizer
 
 ### Link slide thuyết trình (optional)
 
-[OPTIONAL HOSTED_SLIDES_URL_PENDING — use current reviewed deck/content; verify access]
+[After approved publication] https://github.com/thtcsec/signal404-edgeguard-ops/blob/mugvn2026/submission-hardening/docs/presentation/EdgeGuard-Ops-Submission-20261106.pptx — candidate only; updated editable deck is local and not yet remotely accessible.
 
 ### Link demo trực tiếp (optional)
 

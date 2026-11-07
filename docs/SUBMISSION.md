@@ -16,6 +16,10 @@ Evidence sets remain distinct:
 - October 21 automatic run `20261021183352`: separate preserved execution.
 - October 21 automatic run `20261021202014`: primary recorded E2E, paused Datadog historical graphs and ID-correlated logs. No monitor transition claimed for this run.
 
+## Current release validation
+
+Commit `40ee9ee` passed all 15 .NET tests, 6 Python tests, 16 additional Mongo retry/failure assertions and a separate November 6 automatic E2E. [Exact results and release decision](submission/MUGVN2026_RELEASE_VALIDATION.md). Runtime blocker closed; submission remains NO-GO pending required hosted URLs and judge access. The October video and timings above remain historical and do not record this commit.
+
 ## Review package
 
 - [Exact form content](submission/MUGVN2026_FORM_CONTENT.md)
@@ -27,7 +31,7 @@ Evidence sets remain distinct:
 - [Final video audit](submission/MUGVN2026_VIDEO_AUDIT.md)
 - [Non-destructive run instructions](../README.md#run-locally)
 
-Repository: [thtcsec/signal404-edgeguard-ops](https://github.com/thtcsec/signal404-edgeguard-ops), **private** (authenticated GitHub CLI check November 6). It is not anonymously readable. Demo: `[HOSTED_VIDEO_URL_PENDING]`. Architecture and screenshots also need judge-readable URLs after authorized publication/access setup. Do not submit placeholders.
+Repository: [thtcsec/signal404-edgeguard-ops](https://github.com/thtcsec/signal404-edgeguard-ops), **PUBLIC**, confirmed by authenticated metadata and unsigned HTTP 200 on November 7. Remote `main` still serves `639c83a`; the audited hardening release is local until explicitly authorized publication. Public visibility alone does not publish a local commit. Demo: `[HOSTED_VIDEO_URL_PENDING]`. Use the [current link audit](submission/MUGVN2026_GITHUB_AUDIT.md) to distinguish accessible historical URLs from correct release artifacts. Do not submit placeholders.
 
 ## Limits and disclosure
 

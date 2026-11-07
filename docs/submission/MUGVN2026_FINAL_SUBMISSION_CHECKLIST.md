@@ -1,6 +1,6 @@
 # MUGVN 2026 — final submission checklist
 
-Reviewed November 6, 2026. **CONDITIONAL PASS — not ready to submit until access, hosting and remaining runtime checks are closed.** Deadline **November 8, 23:59 ICT** confirmed on the official form.
+Reviewed November 6, 2026. **CONDITIONAL PASS — not ready to submit until release synchronization and final-video hosting are closed. Runtime validation is now complete at `40ee9ee`; see [final release validation](MUGVN2026_RELEASE_VALIDATION.md).** Deadline **November 8, 23:59 ICT** confirmed on the official form.
 
 ## Prepared locally
 
@@ -11,15 +11,16 @@ Reviewed November 6, 2026. **CONDITIONAL PASS — not ready to submit until acce
 - [x] Final 80.1 s MP4 metadata, decode, silence and representative/boundary frames checked; checksum recorded; bytes preserved.
 - [x] Exact form sections/fields inspected read-only; proposed answers prepared.
 - [x] Judge Q&A, current slide content, impact and claim audit prepared.
-- [x] Focused .NET tests and Python tests pass; Release build and Compose config pass (details in report).
+- [x] Full .NET tests and Python tests pass; Release build, Compose config, real-Mongo fault checks and automatic E2E pass (details in final validation).
 - [x] Tracked text secret-pattern scan found no matches; `.env` and MP4 remain ignored.
-- [x] Private repository status confirmed through authenticated GitHub CLI.
+- [x] PUBLIC repository status confirmed November 7 through metadata and unsigned HTTP 200; remote still contains the older main.
 
 ## Before submitting — team owner
 
-- [ ] Close full Mongo-backed test/runtime smoke gate; see release report for current execution outcome.
+- [x] Close full Mongo-backed test/runtime smoke gate: 15 .NET + 6 Python tests, 16 additional Mongo checks and automatic E2E pass on `40ee9ee`.
 - [ ] Review local commits, then explicitly approve push to the chosen remote branch; no push has been performed.
-- [ ] Grant read access to organizer-supplied judge accounts, or explicitly authorize a public/sanitized publication. Do not assume public access.
+- [x] Repository home is anonymously accessible.
+- [ ] After approved publication, confirm judges see the audited release, not old main; check every artifact URL separately.
 - [ ] Host the exact checksummed MP4; test playback/download from a signed-out or judge-equivalent account.
 - [ ] Provide judge-readable architecture and authentic Datadog screenshot links. A private org dashboard URL alone is insufficient.
 - [ ] Replace every placeholder in prepared form content; enter registered leader name/email and team membership yourself.

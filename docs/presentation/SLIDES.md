@@ -53,4 +53,6 @@ Optional real Datadog PNGs if present under `assets/` (none fabricated)
 
 Creative / Technical / Impact / Honest pillars
 Monitoring detects the problem. EdgeGuard acts on it and verifies recovery.
-Private repo: judge access pending · Submit by 8 Nov 2026, 23:59 ICT
+Public repo · publish audited release · Deadline 8 Nov 2026, 23:59 ICT
+
+November 7: current deck footer reconciled with public visibility; original October deck remains historical. Runtime validation remains tied to 40ee9ee, not to the October video.

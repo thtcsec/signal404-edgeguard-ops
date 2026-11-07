@@ -1,23 +1,32 @@
 # Implemented architecture
 
-Current implementation, reviewed November 6, 2026. The September scaffold is preserved separately in [PRE_HACKATHON_BASELINE.md](PRE_HACKATHON_BASELINE.md).
+Current implementation at `40ee9ee`, revalidated with isolated MongoDB on November 6, 2026. See [release validation](submission/MUGVN2026_RELEASE_VALIDATION.md) for complete E2E and real-persistence retry/failure checks. No architecture or product source changed during validation. The September scaffold is preserved separately in [PRE_HACKATHON_BASELINE.md](PRE_HACKATHON_BASELINE.md).
 
 ```mermaid
-flowchart TD
-    S[Python synthetic simulator] -->|POST /telemetry| A[ASP.NET Core 9 API]
-    A --> T[(MongoDB telemetry time-series)]
-    A --> D[(devices: commanded profile)]
-    S -->|GET /devices/deviceId| A
-    T --> H[Health Analyzer: polling + $setWindowFields]
-    H --> I[(incidents)]
-    I --> W[Response Worker: polling]
-    W -->|atomic profile field update| D
-    W --> R[(remediation_actions)]
-    T -->|reported-safe samples| W
-    W -->|verified recovery| I
-    A -. DogStatsD / logs / verified API APM .-> DD[Datadog Agent / cloud]
-    H -. metrics / logs .-> DD
-    W -. metrics / logs .-> DD
+flowchart LR
+    S[Python synthetic simulator] -->|POST reported telemetry| A[ASP.NET Core 9 API]
+    S -->|GET /devices/deviceId poll| A
+    A -->|HTTP response: commanded profile| S
+    subgraph DB[MongoDB 8: self-managed]
+        T[(telemetry: time-series + TTL)]
+        D[(devices: commanded profile)]
+        I[(incidents)]
+        R[(remediation_actions)]
+    end
+    A -->|append reported samples| T
+    A -->|create device / update status| D
+    D -->|read commanded profile| A
+    T -->|window aggregation| H[Health Analyzer: poll]
+    H -->|create OPEN incident| I
+    I -->|poll active incidents| W[Response Worker: poll]
+    W -->|set devices.profile=safe| D
+    T -->|fresh reported-safe evidence| W
+    W -->|REQUESTED / APPLIED / VERIFIED| R
+    W -->|MITIGATING / RECOVERING / RESOLVED| I
+    A -. metrics / logs / API APM .-> DG[Datadog Agent]
+    H -. metrics / logs .-> DG
+    W -. metrics / logs .-> DG
+    DG --> DD[Datadog cloud: dashboard / monitors / logs / API APM]
 ```
 
 | Component | Actual behavior | Source |
@@ -38,3 +47,5 @@ Sequential retry hardening uses a stable action ID per incident and preserves ex
 MongoDB is self-managed via Compose, not Atlas. Workers poll; change streams are not used. API and workers have distinct processes and correlate by IDs, without a single propagated distributed trace. Default Compose starts MongoDB; `apps` and `datadog` are optional profiles. Host ports bind loopback. The lab API has no device authentication; do not expose it publicly.
 
 Configuration uses .NET `Section__Key` variables. Datadog defaults disabled. See README for non-destructive local review and [walkthrough](submission/MUGVN2026_E2E_WALKTHROUGH.md) for exact evidence.
+
+Diagram audit, November 7: all four collection names and the simulator HTTP request/response command flow are explicit. The API does not push commands to hardware; only the synthetic simulator applies the returned profile. Datadog is the operator view, not the decision engine. See [GitHub release audit](submission/MUGVN2026_GITHUB_AUDIT.md).

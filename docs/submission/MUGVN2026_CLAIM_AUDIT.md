@@ -27,3 +27,7 @@ Baseline: local main `639c83a` plus pre-existing dirty editorial/video work. Loc
 | Scoring weights/access-through-Nov22 official confirmed now | Prior repository statements only | Not independently verified here | Remove current scoring assertion; access retention reconfirmation noted |
 
 Historical baseline, E2E JSON, old QA reports and original staged measurements remain intact. A new editable eight-slide submission PPTX preserves the original deck and separates automatic-run talking points from the historical staged slide.
+
+## November 7 reconciliation
+
+The prior private-repository finding above is a November 6 observation. Current metadata and unsigned HTTP show PUBLIC visibility; remote main remains 639c83a, and the hardening branch/40ee9ee URLs return 404. See [current GitHub audit](MUGVN2026_GITHUB_AUDIT.md). The local 80.1-second SRT/manifest were previously uncommitted; the original video bytes remain unchanged.

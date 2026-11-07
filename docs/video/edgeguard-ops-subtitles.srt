@@ -1,35 +1,43 @@
 1
-00:00:00,000 --> 00:00:03,200
-EdgeGuard Ops — automatic closed loop on synthetic edge cameras.
+00:00:00,000 --> 00:00:02,800
+Automatic closed loop on synthetic edge cameras.
 
 2
-00:00:03,200 --> 00:00:15,200
-INJECT: start THERMAL_THROTTLE from a healthy full profile (~65°C, 29 FPS).
+00:00:02,800 --> 00:00:10,800
+INJECT: THERMAL_THROTTLE from healthy full.
 
 3
-00:00:15,200 --> 00:00:50,200
-GPU rises past 85°C and FPS drops. This is the injected thermal fault.
+00:00:10,800 --> 00:00:20,800
+GPU crosses 85°C. FPS drops.
 
 4
-00:00:50,200 --> 00:01:02,200
-commanded_profile=safe is applied. Telemetry recovers to ~54°C / 18 FPS.
+00:00:20,800 --> 00:00:30,800
+commanded_profile=safe. GPU ~54°C / 18 FPS.
 
 5
-00:01:02,200 --> 00:01:15,200
-DETECT: Datadog 3-minute window for E2E 20261021202014 only — synthetic telemetry.
+00:00:30,800 --> 00:00:40,800
+DETECT: paused 3-min window for this E2E.
 
 6
-00:01:15,200 --> 00:01:19,700
-RESPOND: Remediation APPLIED — commanded_profile=safe. act-safe-edge-001-20261021132102
+00:00:40,800 --> 00:00:46,800
+Datadog log: incident RESOLVED.
 
 7
-00:01:19,700 --> 00:01:23,000
-Incident RESOLVED after healthy safe-profile telemetry. inc-thermal-edge-001-20261021132057
+00:00:46,800 --> 00:00:51,800
+APPLIED — commanded_profile=safe
 
 8
-00:01:23,000 --> 00:01:26,900
-VERIFY: MongoDB status=RESOLVED, action=VERIFIED, device.profile=safe.
+00:00:51,800 --> 00:00:56,800
+RECOVERING
 
 9
-00:01:26,900 --> 00:01:30,100
-Inject Fault → Detect → Respond → Verify
+00:00:56,800 --> 00:01:03,300
+RESOLVED
+
+10
+00:01:03,300 --> 00:01:17,300
+Mongo: RESOLVED · VERIFIED · profile=safe
+
+11
+00:01:17,300 --> 00:01:20,100
+Inject → Detect → Respond → Verify

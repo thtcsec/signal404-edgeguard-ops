@@ -1,0 +1,138 @@
+{
+  "date_ict": "2026-11-07",
+  "method": "Unsigned HTTP GET; no credentials/cookies; no form POST",
+  "remote_main": "639c83a223c94b6d717450e7d7c8f66d9c10ff3d",
+  "observations": [
+    {
+      "url": "https://github.com/thtcsec/signal404-edgeguard-ops",
+      "status": 200,
+      "final_url": "https://github.com/thtcsec/signal404-edgeguard-ops",
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "53c66eaea3163e0bdbccc5e291b6d8ef0286d80152c926ed4deda4d0d5f4f4dc",
+      "login_detected": false,
+      "bytes_read": 282054,
+      "excerpt": ""
+    },
+    {
+      "url": "https://github.com/thtcsec/signal404-edgeguard-ops/blob/main/README.md",
+      "status": 200,
+      "final_url": "https://github.com/thtcsec/signal404-edgeguard-ops/blob/main/README.md",
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "9a95ed461b2bcdc281d2d1bccf50a4f246dd7d00c43006080d019ce5a7ef0b44",
+      "login_detected": false,
+      "bytes_read": 233586,
+      "excerpt": ""
+    },
+    {
+      "url": "https://github.com/thtcsec/signal404-edgeguard-ops/blob/main/docs/ARCHITECTURE.md",
+      "status": 200,
+      "final_url": "https://github.com/thtcsec/signal404-edgeguard-ops/blob/main/docs/ARCHITECTURE.md",
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "16aec03b8d35ab33695e35e0d80574e4c065d002a48e26ba176824c9dfec001a",
+      "login_detected": false,
+      "bytes_read": 200909,
+      "excerpt": ""
+    },
+    {
+      "url": "https://github.com/thtcsec/signal404-edgeguard-ops/tree/mugvn2026/submission-hardening",
+      "status": 404,
+      "final_url": "https://github.com/thtcsec/signal404-edgeguard-ops/tree/mugvn2026/submission-hardening"
+    },
+    {
+      "url": "https://github.com/thtcsec/signal404-edgeguard-ops/commit/40ee9ee58f3a638f364850db2b5ab647b0d6b482",
+      "status": 404,
+      "final_url": "https://github.com/thtcsec/signal404-edgeguard-ops/commit/40ee9ee58f3a638f364850db2b5ab647b0d6b482"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/video-build-manifest.json",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/video-build-manifest.json",
+      "content_type": "text/plain; charset=utf-8",
+      "sha256": "0bb3f7f437473e5173530899b708637369e6be12855e078f056b319c6de87ef3",
+      "login_detected": false,
+      "bytes_read": 6767,
+      "excerpt": "{\n  \"output\": \"docs/video/edgeguard-ops-final-demo.mp4\",\n  \"kind\": \"silent_editorial_judge_demo\",\n  \"e2e_run_id\": \"20261021202014\",\n  \"incident_id\": \""
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/edgeguard-ops-subtitles.srt",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/edgeguard-ops-subtitles.srt",
+      "content_type": "text/plain; charset=utf-8",
+      "sha256": "cc01c32d5d532d6ffb24d11658273db1c67673426f6e7aab236dae12adfebc94",
+      "login_detected": false,
+      "bytes_read": 971,
+      "excerpt": "1\n00:00:00,000 --> 00:00:03,200\nEdgeGuard Ops \u2014 automatic closed loop on synthetic edge cameras.\n\n2\n00:00:03,200 --> 00:00:15,200\nINJECT: start THERMA"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/presentation/EdgeGuard-Ops-Submission-20261106.pptx",
+      "status": 404,
+      "final_url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/presentation/EdgeGuard-Ops-Submission-20261106.pptx"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/presentation/EdgeGuard-Ops-Judge-Deck.pptx",
+      "content_type": "application/octet-stream",
+      "sha256": "2e7e13cabab171fe72372882136271b7e35f200207ce338f7243d31a9bd22c3b",
+      "login_detected": false,
+      "bytes_read": 42794,
+      "excerpt": ""
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/captures/datadog-graph-gpu.png",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/captures/datadog-graph-gpu.png",
+      "content_type": "image/png",
+      "sha256": "fc54f5cbb5f9aeeeafbf116b8859d15a20111ef6c12c18c029e29dc9d40f0608",
+      "login_detected": false,
+      "bytes_read": 32504,
+      "excerpt": ""
+    },
+    {
+      "url": "https://app.datadoghq.com/dashboard/9rr-a4u-2st",
+      "status": 200,
+      "final_url": "https://app.datadoghq.com/account/login?next=%2Fdashboard%2F9rr-a4u-2st",
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "e75f2b324c802d6e6b78f54762f2ef8bf13f6f5824a618996e3c985400b8750b",
+      "login_detected": true,
+      "bytes_read": 83471,
+      "excerpt": ""
+    },
+    {
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSd31MPvuUw_e2fZQFmMd-m_RrGyVSJJte_-5ctpAu_LRYap5A/viewform",
+      "status": 200,
+      "final_url": "https://docs.google.com/forms/d/e/1FAIpQLSd31MPvuUw_e2fZQFmMd-m_RrGyVSJJte_-5ctpAu_LRYap5A/viewform",
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "1b6016b89b37e017eb1cbc3b7b841cd908b79aea1ddd8ecd2fe573698a7a876b",
+      "login_detected": false,
+      "bytes_read": 108204,
+      "excerpt": ""
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/recordings/still-dashboard.png",
+      "status": 200,
+      "matches_local": true,
+      "bytes": 179232
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/recordings/still-dashboard-logs.png",
+      "status": 200,
+      "matches_local": true,
+      "bytes": 184493
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/video/recordings/dd-frames/final2-t30.png",
+      "status": 200,
+      "matches_local": true,
+      "bytes": 451478
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/submission/MUGVN2026_RELEASE_REPORT.md",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/thtcsec/signal404-edgeguard-ops/main/docs/submission/MUGVN2026_RELEASE_VALIDATION.md",
+      "error": "HTTP Error 404: Not Found"
+    }
+  ]
+}

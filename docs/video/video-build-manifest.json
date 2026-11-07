@@ -4,8 +4,8 @@
   "e2e_run_id": "20261021202014",
   "incident_id": "inc-thermal-edge-001-20261021132057",
   "remediation_id": "act-safe-edge-001-20261021132102",
-  "duration_seconds": 90.1,
-  "size_bytes": 8816120,
+  "duration_seconds": 80.1,
+  "size_bytes": 5458614,
   "video_codec": "h264",
   "audio_codec": "aac",
   "audio_note": "silent AAC (anullsrc) \u2014 no TTS, no voiceover",
@@ -30,37 +30,37 @@
       "name": "title",
       "file": "s00.mp4",
       "start": 0.0,
-      "end": 3.2
+      "end": 2.8
     },
     {
       "name": "inject",
       "file": "s01.mp4",
-      "start": 3.2,
-      "end": 62.2
+      "start": 2.8,
+      "end": 30.8
     },
     {
       "name": "detect",
       "file": "s02.mp4",
-      "start": 62.2,
-      "end": 75.2
+      "start": 30.8,
+      "end": 46.8
     },
     {
       "name": "respond",
       "file": "s03.mp4",
-      "start": 75.2,
-      "end": 83.0
+      "start": 46.8,
+      "end": 63.3
     },
     {
       "name": "verify",
       "file": "s04.mp4",
-      "start": 83.0,
-      "end": 86.9
+      "start": 63.3,
+      "end": 77.3
     },
     {
       "name": "close",
       "file": "s05.mp4",
-      "start": 86.9,
-      "end": 90.1
+      "start": 77.3,
+      "end": 80.1
     }
   ],
   "sim_cuts": {
@@ -76,93 +76,107 @@
   "freezedetect": [
     {
       "start": 0.0,
-      "end": 3.2,
-      "duration": 3.2
+      "end": 2.8,
+      "duration": 2.8
     },
     {
-      "start": 4.833333,
-      "end": 6.9,
-      "duration": 2.0666670000000007
+      "start": 4.133333,
+      "end": 6.2,
+      "duration": 2.066667
     },
     {
-      "start": 6.9,
-      "end": 8.933333,
-      "duration": 2.033332999999999
+      "start": 6.2,
+      "end": 8.233333,
+      "duration": 2.033333
     },
     {
-      "start": 8.933333,
-      "end": 10.966667,
+      "start": 8.233333,
+      "end": 10.266667,
       "duration": 2.033334
     },
     {
-      "start": 11.966667,
-      "end": 14.0,
-      "duration": 2.0333330000000007
+      "start": 11.333333,
+      "end": 19.233333,
+      "duration": 7.899999999999999
     },
     {
-      "start": 17.1,
-      "end": 19.133333,
-      "duration": 2.033332999999999
-    },
-    {
-      "start": 20.166667,
-      "end": 22.2,
-      "duration": 2.033332999999999
-    },
-    {
-      "start": 22.2,
-      "end": 24.233333,
-      "duration": 2.033332999999999
-    },
-    {
-      "start": 24.233333,
-      "end": 36.566667,
-      "duration": 12.333334000000004
-    },
-    {
-      "start": 63.433333,
-      "end": 68.533333,
+      "start": 32.033333,
+      "end": 37.133333,
       "duration": 5.100000000000001
     },
     {
-      "start": 68.566667,
-      "end": 73.633333,
-      "duration": 5.066665999999998
+      "start": 37.166667,
+      "end": 40.8,
+      "duration": 3.6333330000000004
     },
     {
-      "start": 75.2,
-      "end": 78.6,
-      "duration": 3.3999999999999915
+      "start": 40.8,
+      "end": 45.133333,
+      "duration": 4.333333000000003
     },
     {
-      "start": 79.7,
-      "end": 83.0,
-      "duration": 3.299999999999997
+      "start": 46.8,
+      "end": 51.8,
+      "duration": 5.0
     },
     {
-      "start": 83.0,
-      "end": 86.9,
-      "duration": 3.9000000000000057
+      "start": 51.8,
+      "end": 56.8,
+      "duration": 5.0
+    },
+    {
+      "start": 56.8,
+      "end": 63.3,
+      "duration": 6.5
+    },
+    {
+      "start": 63.3,
+      "end": 77.3,
+      "duration": 14.0
     }
   ],
   "long_freezes": [
     {
-      "start": 24.233333,
-      "end": 36.566667,
-      "duration": 12.333334000000004,
+      "start": 11.333333,
+      "end": 19.233333,
+      "duration": 7.899999999999999,
       "justification": "live console: telemetry lines update on a black field (few pixels change)"
     },
     {
-      "start": 63.433333,
-      "end": 68.533333,
+      "start": 32.033333,
+      "end": 37.133333,
       "duration": 5.100000000000001,
       "justification": "paused Datadog 3-minute window \u2014 graphs are historical, not live-ticking"
     },
     {
-      "start": 68.566667,
-      "end": 73.633333,
-      "duration": 5.066665999999998,
+      "start": 40.8,
+      "end": 45.133333,
+      "duration": 4.333333000000003,
       "justification": "paused Datadog 3-minute window \u2014 graphs are historical, not live-ticking"
+    },
+    {
+      "start": 46.8,
+      "end": 51.8,
+      "duration": 5.0,
+      "justification": "hold authentic worker lines so APPLIED / RECOVERING / RESOLVED can be read"
+    },
+    {
+      "start": 51.8,
+      "end": 56.8,
+      "duration": 5.0,
+      "justification": "hold authentic worker lines so APPLIED / RECOVERING / RESOLVED can be read"
+    },
+    {
+      "start": 56.8,
+      "end": 63.3,
+      "duration": 6.5,
+      "justification": "hold authentic worker lines so APPLIED / RECOVERING / RESOLVED can be read"
+    },
+    {
+      "start": 63.3,
+      "end": 77.3,
+      "duration": 14.0,
+      "justification": "hold mongosh so RESOLVED / VERIFIED / profile=safe can be read"
     }
   ],
   "qa_frames": [
@@ -270,63 +284,76 @@
     },
     {
       "n": 18,
-      "t": 85.0,
-      "kind": "tick",
+      "t": 0.15,
+      "kind": "scene",
       "file": "editorial-qa-18.png"
     },
     {
       "n": 19,
-      "t": 90.0,
-      "kind": "tick",
+      "t": 2.95,
+      "kind": "scene",
       "file": "editorial-qa-19.png"
     },
     {
       "n": 20,
-      "t": 0.15,
+      "t": 30.95,
       "kind": "scene",
       "file": "editorial-qa-20.png"
     },
     {
       "n": 21,
-      "t": 3.35,
+      "t": 46.95,
       "kind": "scene",
       "file": "editorial-qa-21.png"
     },
     {
       "n": 22,
-      "t": 62.35,
+      "t": 63.45,
       "kind": "scene",
       "file": "editorial-qa-22.png"
     },
     {
       "n": 23,
-      "t": 75.35,
+      "t": 77.45,
       "kind": "scene",
       "file": "editorial-qa-23.png"
     },
     {
       "n": 24,
-      "t": 83.15,
-      "kind": "scene",
-      "file": "editorial-qa-24.png"
-    },
-    {
-      "n": 25,
-      "t": 87.05,
-      "kind": "scene",
-      "file": "editorial-qa-25.png"
-    },
-    {
-      "n": 26,
-      "t": 89.7,
+      "t": 79.7,
       "kind": "end",
-      "file": "editorial-qa-26.png"
+      "file": "editorial-qa-24.png"
     }
   ],
   "recording_notes": [
-    "OBS Studio is not installed; classic conhost.exe + ffmpeg gdigrab is used.",
+    "OBS Studio is installed at D:\\Program Files\\obs_studio\\bin\\64bit\\obs64.exe but this cut does not recapture; it edits existing conhost gdigrab + Playwright footage.",
     "Windows Terminal title-grab records a black frame and is not used.",
-    "Datadog captured with an explicit from_ts/to_ts window for this E2E; graph hover disabled.",
-    "Respond uses a 16:9 conhost of this run's worker log (APPLIED before RESOLVED), not a 1600:300 crop."
-  ]
+    "Inject is a 28s cut of the live 95s simulator (start + 85C + safe). Repeating 90C rows are omitted, not restaged.",
+    "Datadog GPU now / FPS now widgets are covered: they are live agent values, not this paused window. Numbers were not replaced.",
+    "Respond holds authentic worker-log frames so APPLIED, RECOVERING, and RESOLVED can be read."
+  ],
+  "independent_submission_audit": {
+    "date": "2026-11-06",
+    "sha256": "deb7e1ababa4826dc5470ba098aa9537f043449713d5dfc11043bcebe673d348",
+    "ffprobe_verified": true,
+    "full_decode_passed": true,
+    "audio_max_volume_db": -91.0,
+    "video_rebuilt": false,
+    "audit": "docs/submission/MUGVN2026_VIDEO_AUDIT.md"
+  },
+  "release_validation_20261106": {
+    "verified_commit": "40ee9ee58f3a638f364850db2b5ab647b0d6b482",
+    "evidence": "docs/evidence/final-release-validation-20261106225132.json",
+    "video_records_verified_commit": false,
+    "note": "Video records October 21 run 20261021202014; separate unrecorded November 6 E2E validates 40ee9ee. MP4 unchanged."
+  },
+  "qa_frame_scope": "qa_frames describes local 80.1-second preview edits, which are not included in this release commit. Older committed editorial-qa images are historical and must not be treated as current final-video verification.",
+  "published_review_frame": {
+    "file": "docs/submission/assets/datadog-oct21-captioned-video-frame.png",
+    "source_time_seconds": 35,
+    "operation": "crop=1744:810:176:110; no data/number replacement",
+    "source_video_sha256": "deb7e1ababa4826dc5470ba098aa9537f043449713d5dfc11043bcebe673d348",
+    "evidence_date": "2026-10-21",
+    "not_recording_of_validated_commit": "40ee9ee"
+  }
 }
